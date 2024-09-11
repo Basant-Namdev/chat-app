@@ -1,0 +1,204 @@
+/* login and sign  up */
+
+#sign-up {
+    position: absolute;
+    top: 18rem;
+    width: 14rem;
+    height: 2.5rem;
+    border-radius: 2rem;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+    border-color: beige;
+    transition: all ease 0.3s;
+}
+
+#sign-up:hover {
+    background: brown;
+    scale: 1.1;
+}
+
+#login {
+    width: 6.8rem;
+    height: 1.7rem;
+    border-radius: 2rem;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+    border-color: aqua;
+    transition: all ease 0.3s;
+}
+
+#login:hover {
+    background-color: aqua;
+    color: black;
+    scale: 1.3;
+}
+
+/* login/sign up form-cont  */
+
+#form-cont {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    top: 13rem;
+    left: 22.5rem;
+    background-color: #555d6aad;
+    z-index: 5;
+}
+
+#form-back {
+    position: fixed;
+    top: 0;
+    background: rgb(33 38 41 / 53%);
+    width: 100%;
+    height: 100vh;
+    backdrop-filter: blur(7px);
+}
+
+.toggle-form {
+    position: relative;
+    top: 1.8rem;
+    left: 2rem;
+    width: 14.2rem;
+    height: 2.5rem;
+    font-weight: bold;
+    font-size: 1.2rem;
+    background-color: initial;
+    cursor: pointer;
+}
+
+#cross {
+    font-size: 1.8rem;
+    position: absolute;
+    left: 48.9rem;
+    top: -2.3rem;
+    color: white;
+    cursor: pointer;
+    transition: all ease 0.3s;
+}
+
+#cross:hover {
+    scale: 1.5;
+}
+
+/* sign-up-form */
+
+#sign-up-form {
+    display: none;
+    position: absolute;
+    top: 29%;
+    left: 23.4%;
+    font-size: larger;
+    font-weight: bold;
+}
+
+.inp-field {
+    padding: 5px;
+    width: 14rem;
+    height: 1rem;
+    border-radius: 0.8rem;
+    position: absolute;
+    left: 10.5rem;
+    background: #a9a9a9a1;
+}
+
+.sign-up-btn {
+    width: 16rem;
+    height: 1.7rem;
+    position: relative;
+    left: 4.5rem;
+    font-weight: bold;
+    background: cadetblue;
+    color: aliceblue;
+    cursor: pointer;
+    transition: all ease 0.3s;
+}
+
+.sign-up-btn:hover {
+    scale: 1.2;
+}
+
+/* login form */
+
+#login-form {
+    position: absolute;
+    top: 7rem;
+    left: 11.3rem;
+}
+
+#login-form label {
+    font-weight: bold;
+    font-size: larger;
+}
+
+::placeholder {
+    color: black;
+    opacity: 1;
+    /* Firefox */
+}
+
+.eye{
+    position: absolute;
+    left: 136%;
+    top: 76%;
+    cursor: pointer;
+}
+.fa-eye{
+    visibility: hidden;
+}
+.sign-eye{
+    position: absolute;
+    left: 147%;
+    top: 54%;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.inpError{
+    font-weight: bold;
+    position: fixed;
+    left: 59.3rem;
+    color: red;
+}
+
+#form-submitted-cont{
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    height: 100vh;
+    backdrop-filter: blur(7px);
+    justify-content: center;
+    align-items: center;
+}
+#form-submitted{
+    width: 30%;
+    height: 30%;
+    padding: 2rem;
+    font-size: 2rem;  
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;  
+    background-color: white;
+    box-shadow: 1rem 1rem 3.5rem;
+}
+#form-submitted > button {
+    width: 20rem;
+    height: 2.7rem;
+    border-radius: 1.3rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#login-auth-failed{
+    color: red;
+    position: relative;
+    top: 1.2rem;
+    left: 6rem;
+    font-weight: bold;
+}

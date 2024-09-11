@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .btn {
+            display: flex;
+            position: relative;
+            top: -3.5rem;
+            left: 15rem;
+            width: 38%;
+            justify-content: space-between;
+        }
+
+        .accpet-btn {
+            background-color: #17aa17;
+            font-size: 1.3rem;
+            padding: 0.3rem;
+            font-weight: bold;
+            border-radius: 1rem;
+            width: 7rem;
+            cursor: pointer;
+        }
+
+        .accpet-btn:active {
+            transform: translateY(2px);
+        }
+
+        #search {
+            color: white;
+            width: 98%;
+            height: 2.1rem;
+            border-radius: 1rem;
+            background: #a9a9a945;
+            margin: 20px 0px 20px 4px;
+            padding: 1rem;
+            font-size: 1rem;
+        }
+
+        .cancel {
+            color: red;
+            font-size: 2.3rem;
+            cursor: pointer;
+        }
+
+        .cancel:active {
+            transform: translateY(2px);
+        }
+
+        .message-opt {
+            background-color: #808080ab;
+            font-size: 1.2rem;
+            padding: 0.4rem;
+            font-weight: bold;
+            border-radius: 1rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <input type="search" name="search" id="search" placeholder="search here...">
+    <% for(let i=0; i<friendReq.length ; i++) { %>
+        <div class="user">
+            <img src="<%= friendReq[i].profile%>" alt="">
+            <span>
+                <%= friendReq[i].name%>
+            </span>
+        </div>
+        <div class="btn">
+            <button class="accpet-btn username" data-user="<%= friendReq[i]._id%>">Accpet</button>
+            <div><i class="fa-solid fa-square-xmark cancel"></i></div>
+        </div>
+        <% } %>
+
+            <% for(let i=0; i<friends.length ; i++) { %>
+                <div class="user">
+                    <img src="<%= friends[i].profile%>" alt="">
+                    <span>
+                        <%= friends[i].name%>
+                    </span>
+                </div>
+                <div class="btn">
+                    <button class="message-opt" data-user="<%= friends[i]._id%>" onclick="chat(event)">Send
+                        message</button>
+                </div>
+                <% } %>
+
+                    <script src="https://kit.fontawesome.com/126cda3aca.js" crossorigin="anonymous"></script>
+                    <script id="js">
+                        // sending request to another user
+                        const accpetBtns = document.querySelectorAll('.accpet-btn')
+
+
+                        accpetBtns.forEach((btn) => {
+                            btn.addEventListener('click', async () => {
+                                const username = btn.dataset.user;
+                                socket.emit('friend request accept', { from: username });
+                                socket.on('req Accepted', () => {
+                                    btn.style.backgroundColor = '#808080ab';
+                                    btn.innerText = 'message';
+                                    btn.parentElement.removeChild(btn.nextElementSibling)
+                                })
+                            });
+                        });
+
+                    </script>
+</body>
+
+</html>

@@ -1,0 +1,210 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+body {
+    background: #000000;
+}
+
+#cont {
+    display: flex;
+}
+
+#dashbord>ul>li>img{
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%
+}
+.webPageCont{
+    width: 40%;
+}
+.user {
+    box-shadow: 0px 0px 2px white;
+    padding: 0.4rem;
+    cursor: pointer;
+}
+.user:active{
+    background-color: grey;
+}
+
+.user>span {
+    color: white;
+    position: relative;
+    top: -1.6rem;
+    left: 0.5rem;
+}
+
+.user>img {
+    border-radius: 50%;
+    width: 4rem;
+    height: 4rem;
+}
+#personal-chat-child-1{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 2rem;
+}
+#personal-chat-child-2{
+    display: none;
+}
+/* here starts the individual conversation */
+#specific-user{
+    padding: 1rem;
+    background: darkslategrey;
+    cursor: pointer;
+}
+#specific-user>img{
+    border-radius: 50%;
+    width: 4rem;
+    height: 4rem;
+}
+#specific-user>span{
+    color: white;
+    position: relative;
+    top: -1.6rem;
+    left: 0.5rem;
+}
+#cross{
+    position: absolute;
+    right: 1rem;
+    top: 2rem;
+    font-size: 2rem;
+}
+#cross:hover {
+    scale: 1.2;
+    background-color: grey;
+    border-radius: 50%;
+}
+#chatCont {
+    display: flex;
+    background: #393838;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+#msg-cont {
+    border: 2px solid black;
+    border-radius: 20px;
+    margin: .2rem;
+    height: 31.7rem;
+    background-color: #0a0a0a;
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
+#msg {
+    padding: 5px;
+    border-radius: 20px;
+    margin: .4rem;
+    font-size: large;
+    width: 87%;
+    height: 3rem;
+    color: white;
+    background-color: black;
+}
+
+#send {
+    width: 10%;
+    height: 3.4rem;
+    position: absolute;
+    bottom: 1.7%;
+    right: 0.6%;
+    background-color: grey;
+    border-radius: 10px;
+}
+
+.reciever-msg {
+    display: inline-block;
+    max-width: 43rem;
+    color: white;
+    background-color: #393838;
+    margin: 20px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.user-msg{
+    color: white;
+    background-color: green;
+    padding: 5px;
+    border-radius: 5px;
+    display: inline-block;
+    max-width: 43rem;
+}
+.user-msg-cont{
+    text-align: end;
+    padding: 15px;
+}
+#logout{
+    position: absolute;
+    right: 0;
+    cursor: pointer;
+}
+/* dashbord part */
+#menu-cont{
+    padding: 1rem;
+    list-style: none;
+    margin-top: 2rem;
+}
+.menu{
+    color: white;
+    text-align: center;
+    font-size: 2rem;
+    padding: 1rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all ease .2s;
+    margin-bottom: 2.5rem;
+}
+.menu:hover{
+    color: cadetblue;
+    scale: 1.5;
+    text-decoration: underline;
+}
+.menuText{
+    display: none;
+}
+.menu:last-child{
+    position: absolute;
+    bottom: -3rem;
+    left: .3rem;
+}
+.menu:last-child:hover{
+    scale: 1;
+}
+
+#form-submitted-cont{
+    /* display: none; */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    height: 100vh;
+    backdrop-filter: blur(7px);
+    justify-content: center;
+    align-items: center;
+}
+#form-submitted{
+    width: 30%;
+    height: 30%;
+    padding: 2rem;
+    font-size: 2rem;  
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;  
+    background-color: white;
+    box-shadow: 1rem 1rem 3.5rem;
+}
+#form-submitted > button {
+    width: 20rem;
+    height: 2.7rem;
+    border-radius: 1.3rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+}

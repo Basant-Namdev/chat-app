@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .btn {
+            display: flex;
+            position: relative;
+            top: -3.5rem;
+            left: 15rem;
+            width: 38%;
+            justify-content: space-between;
+        }
+         #search {
+            color: white;
+            width: 98%;
+            height: 2.1rem;
+            border-radius: 1rem;
+            background: #a9a9a945;
+            margin: 20px 0px 20px 4px;
+            padding: 1rem;
+            font-size: 1rem;
+        }
+        .message-opt{
+            background-color: #808080ab;
+            font-size: 1.2rem;
+            padding: 0.4rem;    
+            font-weight: bold;
+            border-radius: 1rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <input type="search" name="search" id="search" placeholder="search here...">
+    <% for(let i=0; i < chatUser.length ; i++) { %>
+        <div class="user">
+            <img src="<%= chatUser[i].profile%>" alt="">
+            <span>
+                <%= chatUser[i].name%>
+            </span>
+        </div>
+        <div class="btn">
+            <button class="message-opt" data-user="<%= chatUser[i]._id%>" onclick="chat(event)">Send message</button>
+        </div>
+        <% } %>
+        <script id="js"></script>
+</body>
+</html>

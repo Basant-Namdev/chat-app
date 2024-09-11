@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .btn {
+            display: flex;
+            position: relative;
+            top: -3.5rem;
+            left: 15rem;
+            width: 38%;
+            justify-content: space-between;
+        }
+
+        .connect-btn {
+            background-color: cadetblue;
+            font-size: 1.3rem;
+            padding: 0.3rem;
+            font-weight: bold;
+            border-radius: 1rem;
+            width: 7rem;
+            cursor: pointer;
+        }
+
+        .connect-btn:active {
+            transform: translateY(2px);
+        }
+
+        .accpet-btn {
+            background-color: #17aa17;
+            font-size: 1.3rem;
+            padding: 0.3rem;
+            font-weight: bold;
+            border-radius: 1rem;
+            width: 7rem;
+            cursor: pointer;
+        }
+
+        .accpet-btn:active {
+            transform: translateY(2px);
+        }
+
+        #search {
+            color: white;
+            width: 98%;
+            height: 2.1rem;
+            border-radius: 1rem;
+            background: #a9a9a945;
+            margin: 20px 0px 20px 4px;
+            padding: 1rem;
+            font-size: 1rem;
+        }
+
+        .req-sent-btn {
+            border: none;
+            background-color: #808080ab;
+            font-size: 1.3rem;
+            padding: 0.3rem;
+            font-weight: bold;
+            border-radius: 1rem;
+            width: 7rem;
+        }
+
+        .cancel {
+            color: red;
+            font-size: 2.3rem;
+            cursor: pointer;
+        }
+
+        .cancel:active {
+            transform: translateY(2px);
+        }
+
+        .friends {
+            background-color: #808080ab;
+            font-size: 1.3rem;
+            padding: 0.3rem;
+            font-weight: bold;
+            border-radius: 1rem;
+            width: 6.4rem;
+            text-align: center;
+            cursor: context-menu;
+        }
+    </style>
+</head>
+
+<body>
+    <input type="search" name="search" id="search" placeholder="search here...">
+    <% for(let i=0; i<user.length ; i++) { %>
+        <% if(loginUser.sentReq.includes(user[i]._id)) { %>
+            <div class="user">
+                <img src="<%= user[i].profile%>" alt="">
+                <span>
+                    <%= user[i].name%>
+                </span>
+            </div>
+            <div class="btn">
+                <button class="req-sent-btn" data-user="<%= user[i]._id%>">Sent</button>
+            </div>
+            <% } else if(loginUser.friendReq.includes(user[i]._id)) { %>
+                <div class="user">
+                    <img src="<%= user[i].profile%>" alt="">
+                    <span>
+                        <%= user[i].name%>
+                    </span>
+                </div>
+                <div class="btn">
+                    <button class="accpet-btn username" data-user="<%= user[i]._id%>">Accpet</button>
+                    <div><i class="fa-solid fa-square-xmark cancel"></i></div>
+                </div>
+                <% } else if(loginUser.friends.includes(user[i]._id)) { %>
+                    <div class="user">
+                        <img src="<%= user[i].profile%>" alt="">
+                        <span>
+                            <%= user[i].name%>
+                        </span>
+                    </div>
+                    <div class="btn">
+                        <div class="friends">Friend</div>
+                    </div>
+                    <% } else { %>
+                        <div class="user">
+                            <img src="<%= user[i].profile%>" alt="">
+                            <span>
+                                <%= user[i].name%>
+                            </span>
+                        </div>
+                        <div class="btn">
+                            <button class="connect-btn username" data-user="<%= user[i]._id%>">connect</button>
+                        </div>
+                        <% }} %>
+
+                            <script src="https://kit.fontawesome.com/126cda3aca.js" crossorigin="anonymous"></script>
+                            <script id="js">
+
+                                // sending request to another user
+                                const connectBtns = document.querySelectorAll('.connect-btn')
+
+                                connectBtns.forEach((btn) => {
+                                    let clicked = false;
+                                    btn.addEventListener('click', async () => {
+                                        if (clicked) return;
+                                        clicked = true;
+                                        // changing button style
+                                        btn.style.backgroundColor = '#808080ab';
+                                        btn.innerText = 'Sent';
+                                        const username = btn.dataset.user;
+                                        socket.emit('friend request sent', { to: username });
+                                    });
+                                });
+
+                            </script>
+
+</body>
+
+</html>
