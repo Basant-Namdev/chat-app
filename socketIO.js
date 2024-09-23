@@ -31,15 +31,14 @@ module.exports = (io) => {
         });
         socket.on('friend request sent', (data) => {
             let reciever = data.to;
+            let recieverSocket = users[reciever];
             // saving the request in the db
             inController.saveRequest(sender, reciever, (err, result) => {
                 if (err) {
                     console.log(err);
                 } else {
                     // Send the request to the recipient
-                    console.log(sender);
-
-                    // chatNamespace.to(recieverSocketId).emit('friendRequest', sender);
+                    chatNamespace.to(recieverSocket).emit('friendRequest', result);
                 }
             })
         })
@@ -50,13 +49,13 @@ module.exports = (io) => {
             let reqRecieverId = users[reqReciever];
 
             // saving the request in the db
-            inController.acceptRequest(reqSender, reqReciever, (err, result) => {
+            inController.acceptRequest(reqSender, reqReciever, (err, result,reqSender) => {
                 if (err) {
                     console.log(err);
-                } else {
+                } else {                    
                     // accepting friend request
-                    chatNamespace.to(reqRecieverId).emit('req Accepted');    
-                    chatNamespace.to(reqSenderId).emit('req Accepted', reqReciever);    
+                    chatNamespace.to(reqRecieverId).emit('req Accepted ack', reqSender);    
+                    chatNamespace.to(reqSenderId).emit('req Accepted', result);    
                 }
             })
         })

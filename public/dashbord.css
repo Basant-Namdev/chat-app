@@ -147,30 +147,30 @@ body {
 #menu-cont{
     padding: 1rem;
     list-style: none;
-    margin-top: 2rem;
+    margin-top: 3.3rem;
 }
 .menu{
     color: white;
     text-align: center;
     font-size: 2rem;
-    padding: 1rem;
+    padding: .3rem;
     text-decoration: none;
     cursor: pointer;
     transition: all ease .2s;
-    margin-bottom: 2.5rem;
+    margin-bottom: 2rem;
 }
 .menu:hover{
     color: cadetblue;
-    scale: 1.5;
+    scale: 1.2;
     text-decoration: underline;
 }
 .menuText{
-    display: none;
+    font-size: 1rem;
 }
 .menu:last-child{
     position: absolute;
     bottom: -3rem;
-    left: .3rem;
+    left: 1rem;
 }
 .menu:last-child:hover{
     scale: 1;

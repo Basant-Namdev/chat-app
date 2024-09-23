@@ -32,11 +32,11 @@
                 </li>
                 <li class="menu menuFunc">
                     <a href="/dashbord/logout" style="color: black ;"><i class="fa-solid fa-right-from-bracket"></i></a>
-                    <span class="menuText">logout</span>
+                    <span class="menuText" style="display: none;">logout</span>
                 </li>
-                <li id="user-part" class="menuFunc" style="cursor: pointer;">
+                <li id="user-part" class="menuFunc" style="cursor: pointer; display: flex;justify-content: center;">
                     <img src="<%= loginUser.profile%>" alt="" >
-                    <span class="menuText">profile</span>
+                    <span class="menuText" style="display: none;">profile</span>
                 </li>
             </ul>
         </div>
@@ -90,6 +90,24 @@
                     .catch(error => console.error('Error fetching webpage:', error));
             })
         }
+
+        // accepting friend request (this code is belong to friends.ejs.)
+        function acceptFriendRequest(btn) {
+            const username = btn.dataset.user;
+            const btnParent = btn.parentNode;
+            socket.emit('friend request accept', { from: username });
+            socket.on('req Accepted ack', (friendId) => {
+                btnParent.removeChild(btn.nextElementSibling);
+                const button = document.createElement('button');
+                button.className = 'message-opt';
+                button.dataset.user = friendId;
+                button.onclick = event => chat(event);
+                button.textContent = 'Send message';
+                btnParent.appendChild(button);
+                btnParent.removeChild(btn);
+            });
+        }
+
         // code for chat functionality
         function chat(e) {
             document.getElementById('cross').style.display = "block"

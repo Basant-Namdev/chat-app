@@ -30,7 +30,9 @@ exports.saveRequest = async (sender, reciever, callback) => {
   try {
     await users.updateOne({ _id: sender }, { $push: { sentReq: reciever } })
     await users.updateOne({ _id: reciever }, { $push: { friendReq: sender } })
-    callback(null, reciever);
+    const reqSender = await users.findById(sender).select('-password -sentReq -username -friends -friendReq');
+
+    callback(null, reqSender);
   } catch (error) {
     console.log(error);
     callback(error, null);
@@ -55,7 +57,8 @@ exports.acceptRequest = async (sender, reciever, callback) => {
     await users.updateOne({ _id: reciever }, { $push: { friends: sender } })
     await users.updateOne({ _id: sender }, { $pull: { sentReq: reciever } })
     await users.updateOne({ _id: reciever }, { $pull: { friendReq: sender } })
-    callback(null, reciever);
+    const recieverObj = await users.findById(reciever).select('-password -sentReq -username -friends -friendReq');
+    callback(null, recieverObj, sender);
   } catch (error) {
     console.log(error);
     callback(error, null);

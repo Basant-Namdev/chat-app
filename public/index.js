@@ -154,12 +154,11 @@ loginForm.addEventListener('submit', async function (event) {
             })
         })
         const result = await response.json(); // parse response as JSON
-        if (!result.success) {
-            document.getElementById('login-auth-failed').innerHTML = "*Invalid username or password!";
-        }
         if (result.redirectUrl) {
             window.location.href = result.redirectUrl;
-          }
+        } else if (!result.success) {
+            document.getElementById('login-auth-failed').innerHTML = "*Invalid username or password!";
+        }
     } catch (error) {
         popUp("Something went wrong! try again later.")
         console.error('Error submitting form:', error);
