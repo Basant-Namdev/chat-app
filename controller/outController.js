@@ -81,8 +81,9 @@ exports.openDashbord = async (req, res) => {
   try {
     const user = await users.find({ _id: { $ne: req.user } }).select('-password');
     const loginUser = await users.findById(req.user).select('-password');
-    
-    ejs.renderFile(path.resolve(__dirname, '../views/dashbord.ejs'), { user: user, loginUser:loginUser }, function (err, str) {
+    const friendReq = await users.find({ _id: { $in: loginUser.friendReq } }).select('-password -sentReq -username -friends -friendReq');    
+
+    ejs.renderFile(path.resolve(__dirname, '../views/dashbord.ejs'), { user: user, loginUser:loginUser,reqCount : friendReq.length }, function (err, str) {
       if(!err){res.send(str);}
       else{console.log(err)}
     });

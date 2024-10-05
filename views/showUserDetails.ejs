@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    img {
+        border-radius: 50%;
+        width: 13rem;
+        height: 13rem;
+        /* position: absolute; */
+    }
+
+    #user-detail-container {
+        margin-top: 5rem;
+        padding: 2rem;
+    }
+
+    #name {
+        font-size: 2rem;
+        color: white;
+    }
+
+    #btn-container {
+        display: flex;
+        justify-content: center;
+    }
+
+    .btn {
+        cursor: pointer;
+        width: 8rem;
+        margin: 1rem;
+        font-size: 1.1rem;
+        border-radius: 0.6rem;
+        padding: .3rem;
+        font-weight: bold;
+        color: white;
+        background: darkslategrey;
+    }
+</style>
+
+<body>
+    <div id="user-detail-container">
+        <div style="display: flex;justify-content: center;"><img src="<%=user.profile%>" alt=""></div>
+        <div id="btn-container">
+            <% if(friends) { %>
+                <button class="btn"
+                    style="color: white; background: none;border: 2px solid white;cursor: not-allowed;">Friends</button>
+                <button class="btn" id="unfriend">Unfriend</button>
+                <% } else if(friendReq) { %>
+                    <button class="btn">Accept</button>
+                    <button class="btn" style="background-color: red;">cancel</button>
+                    <% } else { %>
+                        <button class="btn">connect</button>
+                        <% } %>
+        </div>
+        <div style=" font-size: 1.1rem; padding: .5rem; color: aqua;">Username</div>
+        <hr style="margin-bottom: .5rem;">
+        <div id="name">
+            <%= user.name %>
+        </div>
+    </div>
+    <script id="js">
+        document.getElementById('unfriend').addEventListener('click', async () => {
+            const id = `<%=user._id%>`;
+            const url = `/dashbord/${id}`;
+
+            await fetch(url, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success === true) {
+                        alert('unfriended');
+                    } else {
+                        alert('Not unfriended');
+                    }
+                })
+                .catch(error => {
+                    alert('technical error')
+                    console.error(error)
+                });
+        })
+    </script>
+</body>
+
+</html>

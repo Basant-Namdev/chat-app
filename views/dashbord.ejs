@@ -21,6 +21,11 @@
                 <li class="menu menuFunc">
                     <i class="fa-solid fa-user-group"></i>
                     <span class="menuText">friends</span>
+                    <% if(reqCount>0) { %>
+                        <span class="count">
+                            <%=reqCount%>
+                        </span>
+                        <% } %>
                 </li>
                 <li class="menu menuFunc">
                     <i class="fa-solid fa-users-between-lines"></i>
@@ -35,7 +40,7 @@
                     <span class="menuText" style="display: none;">logout</span>
                 </li>
                 <li id="user-part" class="menuFunc" style="cursor: pointer; display: flex;justify-content: center;">
-                    <img src="<%= loginUser.profile%>" alt="" >
+                    <img src="<%= loginUser.profile%>" alt="">
                     <span class="menuText" style="display: none;">profile</span>
                 </li>
             </ul>
@@ -64,6 +69,7 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
+
         // connect to the '/chat' namespace
         const socket = io('/chat', {
             query: {
@@ -76,7 +82,7 @@
         const userList = document.getElementsByClassName('user');
         const menuList = document.getElementsByClassName('menuFunc');
         const menuText = document.getElementsByClassName('menuText');
-        
+
 
         // code for different functionalities of dashbord
         for (let i = 0; i < menuList.length; i++) {
@@ -92,69 +98,82 @@
         }
 
         // accepting friend request (this code is belong to friends.ejs.)
-        function acceptFriendRequest(btn) {
+        function acceptFriendRequest(btn, count) {
             const username = btn.dataset.user;
-            const btnParent = btn.parentNode;
+            const parentElement = btn.parentNode.parentNode;
             socket.emit('friend request accept', { from: username });
-            socket.on('req Accepted ack', (friendId) => {
-                btnParent.removeChild(btn.nextElementSibling);
-                const button = document.createElement('button');
-                button.className = 'message-opt';
-                button.dataset.user = friendId;
-                button.onclick = event => chat(event);
-                button.textContent = 'Send message';
-                btnParent.appendChild(button);
-                btnParent.removeChild(btn);
+            socket.on('req Accepted ack', (friend) => {
+                if (count == 1) {
+                    document.querySelectorAll('.count')[0].remove();
+                    document.querySelectorAll('.count')[1].remove();
+                } else {
+                    document.querySelectorAll('.count')[0].innerText = count - 1
+                    document.querySelectorAll('.count')[1].innerText = count - 1
+                }
+                parentElement.remove();
+                document.getElementById('friends').innerHTML += ` 
+                <div class="user-container">
+                <div class="user">
+                    <img src="${friend.profile}" alt="">
+                    <span>
+                        ${friend.name}
+                    </span>
+                </div>
+                <div class="btn">
+                    <button class="message-opt" data-user="${friend._id}" onclick="chat(event)">Send
+                        message</button>
+                </div>
+            </div>`
             });
         }
 
         // code for chat functionality
         function chat(e) {
             document.getElementById('cross').style.display = "block"
-                document.getElementById('personal-chat-child-2').style.display = "block";
-                document.getElementById('personal-chat-child-1').style.display = "none";
-                msgScreen.innerHTML = "";
-                // to open chat window
-                document.getElementById('specific-user').getElementsByTagName('span')[0].innerHTML = e.target.parentNode.previousElementSibling.querySelector('span').innerText;
-                document.getElementById('specific-user').getElementsByTagName('img')[0].src = e.target.parentNode.previousElementSibling.querySelector('img').src;
-                // Send a message to a specific user (creating one to one connection)               
-                socket.emit('one to one', {
-                    to: e.target.dataset.user
-                });
-                // fetching old chats
-                const response = fetch('/dashbord/loadChat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        recieverId: e.target.dataset.user
-                    })
-                }).then(response => response.json()).then(data => {
-                    data.forEach((item) => {
-                        if (`<%=loginUser._id%>` == item.sender) {
-                            let oldMsg = document.createElement("span");
-                            let div = document.createElement("div");
-                            div.className = "user-msg-cont";
-                            oldMsg.className = "user-msg";
-                            oldMsg.innerText = `${item.message}`
-                            div.appendChild(oldMsg);
-                            msgScreen.appendChild(div);
-                            msgScreen.scrollTop = msgScreen.scrollHeight;
-
-                        } else {
-                            let oldMsg = document.createElement("span");
-                            let div = document.createElement("div");
-                            oldMsg.className = "reciever-msg";
-                            div.className = "reciever-msg-cont";
-                            oldMsg.innerText = `${item.message}`;
-                            div.appendChild(oldMsg);
-                            msgScreen.appendChild(div);
-                            msgScreen.scrollTop = msgScreen.scrollHeight;
-
-                        }
-                    })
+            document.getElementById('personal-chat-child-2').style.display = "block";
+            document.getElementById('personal-chat-child-1').style.display = "none";
+            msgScreen.innerHTML = "";
+            // to open chat window
+            document.getElementById('specific-user').getElementsByTagName('span')[0].innerHTML = e.target.parentNode.previousElementSibling.querySelector('span').innerText;
+            document.getElementById('specific-user').getElementsByTagName('img')[0].src = e.target.parentNode.previousElementSibling.querySelector('img').src;
+            // Send a message to a specific user (creating one to one connection)               
+            socket.emit('one to one', {
+                to: e.target.dataset.user
+            });
+            // fetching old chats
+            const response = fetch('/dashbord/loadChat', {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify({
+                    recieverId: e.target.dataset.user
                 })
+            }).then(response => response.json()).then(data => {
+                data.forEach((item) => {
+                    if (`<%=loginUser._id%>` == item.sender) {
+                        let oldMsg = document.createElement("span");
+                        let div = document.createElement("div");
+                        div.className = "user-msg-cont";
+                        oldMsg.className = "user-msg";
+                        oldMsg.innerText = `${item.message}`
+                        div.appendChild(oldMsg);
+                        msgScreen.appendChild(div);
+                        msgScreen.scrollTop = msgScreen.scrollHeight;
+
+                    } else {
+                        let oldMsg = document.createElement("span");
+                        let div = document.createElement("div");
+                        oldMsg.className = "reciever-msg";
+                        div.className = "reciever-msg-cont";
+                        oldMsg.innerText = `${item.message}`;
+                        div.appendChild(oldMsg);
+                        msgScreen.appendChild(div);
+                        msgScreen.scrollTop = msgScreen.scrollHeight;
+
+                    }
+                })
+            })
         }
 
         // to send the message to the user
@@ -193,6 +212,31 @@
             document.getElementById('cross').style.display = "none"
             document.getElementById('personal-chat-child-2').style.display = "none"
             document.getElementById('personal-chat-child-1').style.display = "block";
+        }
+
+
+        // this function shows user details onclick on specific user
+        function showUserDetails() {
+            const users = document.getElementsByClassName('user');
+            for (let i = 0; i < users.length; i++) {
+                const user = users[i];
+                user.addEventListener('click', event => {
+                    const id = event.currentTarget.dataset.user
+                    const url = `/dashbord/showUserDetails?userId=${id}`
+                    fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'text/html'
+                        }
+                    })
+                        .then(response => response.text())
+                        .then((html) => {
+                            document.querySelector('.webPageCont').innerHTML = html;
+                            eval(document.querySelector('.webPageCont').querySelector('#js').text);
+                        })
+                        .catch(error => console.error('Error fetching webpage:', error));
+                });
+            }
         }
     </script>
 </body>

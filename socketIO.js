@@ -33,12 +33,12 @@ module.exports = (io) => {
             let reciever = data.to;
             let recieverSocket = users[reciever];
             // saving the request in the db
-            inController.saveRequest(sender, reciever, (err, result) => {
+            inController.saveRequest(sender, reciever, (err, result,count) => {
                 if (err) {
                     console.log(err);
                 } else {
                     // Send the request to the recipient
-                    chatNamespace.to(recieverSocket).emit('friendRequest', result);
+                    chatNamespace.to(recieverSocket).emit('friendRequest', result,count);
                 }
             })
         })

@@ -84,6 +84,10 @@
             text-align: center;
             cursor: context-menu;
         }
+
+        .user-container {
+            height: 5.7rem;
+        }
     </style>
 </head>
 
@@ -91,45 +95,53 @@
     <input type="search" name="search" id="search" placeholder="search here...">
     <% for(let i=0; i<user.length ; i++) { %>
         <% if(loginUser.sentReq.includes(user[i]._id)) { %>
-            <div class="user">
-                <img src="<%= user[i].profile%>" alt="">
-                <span>
-                    <%= user[i].name%>
-                </span>
-            </div>
-            <div class="btn">
-                <button class="req-sent-btn" data-user="<%= user[i]._id%>">Sent</button>
-            </div>
-            <% } else if(loginUser.friendReq.includes(user[i]._id)) { %>
-                <div class="user">
+            <div class="user-container">
+                <div class="user" data-user="<%= user[i]._id%>">
                     <img src="<%= user[i].profile%>" alt="">
                     <span>
                         <%= user[i].name%>
                     </span>
                 </div>
                 <div class="btn">
-                    <button class="accpet-btn username" data-user="<%= user[i]._id%>">Accpet</button>
-                    <div><i class="fa-solid fa-square-xmark cancel"></i></div>
+                    <button class="req-sent-btn" data-user="<%= user[i]._id%>">Sent</button>
                 </div>
-                <% } else if(loginUser.friends.includes(user[i]._id)) { %>
-                    <div class="user">
+            </div>
+            <% } else if(loginUser.friendReq.includes(user[i]._id)) { %>
+                <div class="user-container">
+                    <div class="user" data-user="<%= user[i]._id%>">
                         <img src="<%= user[i].profile%>" alt="">
                         <span>
                             <%= user[i].name%>
                         </span>
                     </div>
                     <div class="btn">
-                        <div class="friends">Friend</div>
+                        <button class="accpet-btn username" data-user="<%= user[i]._id%>">Accpet</button>
+                        <div><i class="fa-solid fa-square-xmark cancel"></i></div>
                     </div>
-                    <% } else { %>
-                        <div class="user">
+                </div>
+                <% } else if(loginUser.friends.includes(user[i]._id)) { %>
+                    <div class="user-container">
+                        <div class="user" data-user="<%= user[i]._id%>">
                             <img src="<%= user[i].profile%>" alt="">
                             <span>
                                 <%= user[i].name%>
                             </span>
                         </div>
                         <div class="btn">
-                            <button class="connect-btn username" data-user="<%= user[i]._id%>">connect</button>
+                            <div class="friends">Friend</div>
+                        </div>
+                    </div>
+                    <% } else { %>
+                        <div class="user-container">
+                            <div class="user" data-user="<%= user[i]._id%>">
+                                <img src="<%= user[i].profile%>" alt="">
+                                <span>
+                                    <%= user[i].name%>
+                                </span>
+                            </div>
+                            <div class="btn">
+                                <button class="connect-btn username" data-user="<%= user[i]._id%>">connect</button>
+                            </div>
                         </div>
                         <% }} %>
 
@@ -151,7 +163,10 @@
                                         socket.emit('friend request sent', { to: username });
                                     });
                                 });
-
+                                document.querySelectorAll('.user-container').forEach((div) => {
+                                    div.addEventListener('click', () => showUserDetails(div));
+                                });
+                                showUserDetails()
                             </script>
 
 </body>

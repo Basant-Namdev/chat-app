@@ -31,8 +31,10 @@ exports.saveRequest = async (sender, reciever, callback) => {
     await users.updateOne({ _id: sender }, { $push: { sentReq: reciever } })
     await users.updateOne({ _id: reciever }, { $push: { friendReq: sender } })
     const reqSender = await users.findById(sender).select('-password -sentReq -username -friends -friendReq');
+    const reqReciever = await users.findById(reciever).select('-password -sentReq -username -friends')
+    const friendReq = await users.find({ _id: { $in: reqReciever.friendReq } }).select('-password -sentReq -username -friends -friendReq');
 
-    callback(null, reqSender);
+    callback(null, reqSender, friendReq.length);
   } catch (error) {
     console.log(error);
     callback(error, null);
@@ -58,7 +60,8 @@ exports.acceptRequest = async (sender, reciever, callback) => {
     await users.updateOne({ _id: sender }, { $pull: { sentReq: reciever } })
     await users.updateOne({ _id: reciever }, { $pull: { friendReq: sender } })
     const recieverObj = await users.findById(reciever).select('-password -sentReq -username -friends -friendReq');
-    callback(null, recieverObj, sender);
+    const senderObj = await users.findById(sender).select('-password -sentReq -username -friends -friendReq');
+    callback(null, recieverObj, senderObj);
   } catch (error) {
     console.log(error);
     callback(error, null);
@@ -181,5 +184,29 @@ exports.changeProfile = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).send({ success: false })
+  }
+}
+// it show user details when clicked on a user
+exports.showUserDetails = async (req, res) => {
+  try {
+    const currentUser = await users.findById(req.user)
+    const user = await users.findById(req.query.userId).select('-password -sentReq -friends -friendReq -username');
+    const friend = await currentUser.friends.includes(req.query.userId);
+    const friendReq = await currentUser.friendReq.includes(req.query.userId);
+    myFunctions.renderView(res, 'showUserDetails', { user: user, friends: friend,friendReq : friendReq });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: 'internal server error. unable to take this request. pls try again later.' })
+  }
+}
+// unfriends an user
+exports.unFriend = async (req,res) =>{
+  try {
+    await users.updateOne({ _id: req.user }, { $pull: { friends: req.params.id } })
+    await users.updateOne({ _id: req.params.id }, { $pull: { friends: req.user } })
+    res.status(200).send({ success: true });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: 'internal server error. unable to take this request. pls try again later.' })
   }
 }
