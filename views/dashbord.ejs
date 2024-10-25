@@ -105,7 +105,7 @@
             socket.on('req Accepted ack', (friend) => {
                 if (count == 1) {
                     document.querySelectorAll('.count')[0].remove();
-                    document.querySelectorAll('.count')[1].remove();
+                    document.querySelectorAll('.count')[0].remove();
                 } else {
                     document.querySelectorAll('.count')[0].innerText = count - 1
                     document.querySelectorAll('.count')[1].innerText = count - 1

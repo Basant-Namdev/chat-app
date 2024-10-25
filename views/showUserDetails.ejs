@@ -2,92 +2,158 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
 </head>
 <style>
-    img {
-        border-radius: 50%;
-        width: 13rem;
-        height: 13rem;
-        /* position: absolute; */
-    }
+  img {
+    border-radius: 50%;
+    width: 13rem;
+    height: 13rem;
+    /* position: absolute; */
+  }
 
-    #user-detail-container {
-        margin-top: 5rem;
-        padding: 2rem;
-    }
+  #user-detail-container {
+    margin-top: 5rem;
+    padding: 2rem;
+  }
 
-    #name {
-        font-size: 2rem;
-        color: white;
-    }
+  #name {
+    font-size: 2rem;
+    color: white;
+  }
 
-    #btn-container {
-        display: flex;
-        justify-content: center;
-    }
+  #btn-container {
+    display: flex;
+    justify-content: center;
+  }
 
-    .btn {
-        cursor: pointer;
-        width: 8rem;
-        margin: 1rem;
-        font-size: 1.1rem;
-        border-radius: 0.6rem;
-        padding: .3rem;
-        font-weight: bold;
-        color: white;
-        background: darkslategrey;
-    }
+  .btn {
+    cursor: pointer;
+    width: 8rem;
+    margin: 1rem;
+    font-size: 1.1rem;
+    border-radius: 0.6rem;
+    padding: .3rem;
+    font-weight: bold;
+    color: white;
+    background: darkslategrey;
+  }
+
+  #sent-btn {
+    width: 8rem;
+    margin: 1rem;
+    font-size: 1.1rem;
+    border-radius: 0.6rem;
+    padding: .3rem;
+    font-weight: bold;
+    background-color: #808080ab;
+    color: black;
+    cursor: not-allowed;
+  }
 </style>
 
 <body>
-    <div id="user-detail-container">
-        <div style="display: flex;justify-content: center;"><img src="<%=user.profile%>" alt=""></div>
-        <div id="btn-container">
-            <% if(friends) { %>
-                <button class="btn"
-                    style="color: white; background: none;border: 2px solid white;cursor: not-allowed;">Friends</button>
-                <button class="btn" id="unfriend">Unfriend</button>
-                <% } else if(friendReq) { %>
-                    <button class="btn">Accept</button>
-                    <button class="btn" style="background-color: red;">cancel</button>
-                    <% } else { %>
-                        <button class="btn">connect</button>
-                        <% } %>
-        </div>
-        <div style=" font-size: 1.1rem; padding: .5rem; color: aqua;">Username</div>
-        <hr style="margin-bottom: .5rem;">
-        <div id="name">
-            <%= user.name %>
-        </div>
+  <div id="user-detail-container">
+    <div style="display: flex;justify-content: center;"><img src="<%=user.profile%>" alt=""></div>
+    <div id="btn-container">
+      <% if(friends) { %>
+        <button class="btn"
+          style="color: white; background: none;border: 2px solid white;cursor: not-allowed;">Friends</button>
+        <button class="btn" id="unfriend">Unfriend</button>
+        <% } else if(friendReq) { %>
+          <button class="btn">Accept</button>
+          <button class="btn" style="background-color: red;">delete</button>
+          <% } else if(friendReqSent) { %>
+            <button id="sent-btn">Sent</button>
+            <button id="cancel-btn" class="btn" style="background-color: red;">cancel</button>
+            <% } else { %>
+              <button class="btn" id="connect-btn">connect</button>
+              <% } %>
     </div>
-    <script id="js">
-        document.getElementById('unfriend').addEventListener('click', async () => {
-            const id = `<%=user._id%>`;
-            const url = `/dashbord/${id}`;
+    <div style=" font-size: 1.1rem; padding: .5rem; color: aqua;">Username</div>
+    <hr style="margin-bottom: .5rem;">
+    <div id="name">
+      <%= user.name %>
+    </div>
+  </div>
+  <script id="js">
+    const id = `<%= user.id%>`
+    const btnContainer = document.getElementById('btn-container')
 
-            await fetch(url, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success === true) {
-                        alert('unfriended');
-                    } else {
-                        alert('Not unfriended');
-                    }
-                })
-                .catch(error => {
-                    alert('technical error')
-                    console.error(error)
-                });
+    btnContainer.addEventListener('click', async (event) => {
+      // cancel the sent request
+      if (event.target.id === 'cancel-btn') {
+        try {
+          const url = `/dashbord/cancel-sent-request/${id}`;
+          const response = await fetch(url, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          if (response.ok) {
+            btnContainer.innerHTML = '';
+            let connect = document.createElement('button');
+            connect.textContent = 'connect';
+            connect.id = 'connect-btn';
+            connect.className = 'btn';
+            btnContainer.appendChild(connect);
+          } else {
+            alert('unable to take this request.try again later.');
+          }
+        } catch (error) {
+          console.log(error);
+          alert('unable to take this request.try again later.');
+        }
+      }
+      // send request        
+      else if (event.target.id === 'connect-btn') {
+        btnContainer.innerHTML = '';
+        let sent = document.createElement('button');
+        let cancel = document.createElement('button');
+        sent.id = 'sent-btn';
+        sent.textContent = 'Sent';
+        cancel.className = 'btn';
+        cancel.id = 'cancel-btn';
+        cancel.style.background = 'red';
+        cancel.textContent = 'Cancel';
+        btnContainer.appendChild(sent);
+        btnContainer.appendChild(cancel);
+        socket.emit('friend request sent', { to: id });
+      }
+      // unfriend a friend
+      else if (event.target.id === 'unfriend') {
+        const url = `/dashbord/${id}`;
+        await fetch(url, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
         })
-    </script>
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success === true) {
+              btnContainer.innerHTML = '';
+              let connect = document.createElement('button');
+              connect.textContent = 'connect';
+              connect.id = 'connect-btn';
+              connect.className = 'btn';
+              btnContainer.appendChild(connect);
+              alert('unfriended');
+            } else {
+              alert('Not unfriended');
+            }
+          })
+          .catch((error) => {
+            alert('technical error');
+            console.error(error);
+          });
+      }
+    });
+
+  </script>
 </body>
 
 </html>

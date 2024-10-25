@@ -193,18 +193,30 @@ exports.showUserDetails = async (req, res) => {
     const user = await users.findById(req.query.userId).select('-password -sentReq -friends -friendReq -username');
     const friend = await currentUser.friends.includes(req.query.userId);
     const friendReq = await currentUser.friendReq.includes(req.query.userId);
-    myFunctions.renderView(res, 'showUserDetails', { user: user, friends: friend,friendReq : friendReq });
+    const friendReqSent = await currentUser.sentReq.includes(req.query.userId);
+    myFunctions.renderView(res, 'showUserDetails', { user: user, friends: friend, friendReq: friendReq, friendReqSent: friendReqSent });
   } catch (error) {
     console.log(error);
     res.status(500).send({ message: 'internal server error. unable to take this request. pls try again later.' })
   }
 }
 // unfriends an user
-exports.unFriend = async (req,res) =>{
+exports.unFriend = async (req, res) => {
   try {
     await users.updateOne({ _id: req.user }, { $pull: { friends: req.params.id } })
     await users.updateOne({ _id: req.params.id }, { $pull: { friends: req.user } })
     res.status(200).send({ success: true });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: 'internal server error. unable to take this request. pls try again later.' })
+  }
+}
+// it cancels the sent friend request
+exports.cancelSentRequest = async (req, res) => {
+  try {
+    await users.updateOne({ _id: req.user }, { $pull: { sentReq: req.params.id } })
+    await users.updateOne({ _id: req.params.id }, { $pull: { friendReq: req.user } })
+    res.status(200).json({ message: "Success" });
   } catch (error) {
     console.log(error);
     res.status(500).send({ message: 'internal server error. unable to take this request. pls try again later.' })
