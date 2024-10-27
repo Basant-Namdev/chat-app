@@ -122,7 +122,7 @@
                     <div class="btn">
                         <button class="accpet-btn username" data-user="<%= friendReq[i]._id%>"
                             onclick="acceptFriendRequest(this, document.querySelector('.count').innerText)">Accpet</button>
-                        <div><i class="fa-solid fa-square-xmark cancel"></i></div>
+                        <div><i class="fa-solid fa-square-xmark cancel" id="friends_deleteReq" onclick="deleteFriendRequest('<%=friendReq[i]._id%>', event, document.querySelector('.count').innerText)"></i></div>
                     </div>
                 </div>
                 <% } %>

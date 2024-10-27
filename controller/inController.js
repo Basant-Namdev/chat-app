@@ -222,3 +222,14 @@ exports.cancelSentRequest = async (req, res) => {
     res.status(500).send({ message: 'internal server error. unable to take this request. pls try again later.' })
   }
 }
+// it delete the friend request
+exports.deleteFriendRequest = async (req,res)=>{
+  try {
+    await users.updateOne({ _id: req.user }, { $pull: { friendReq: req.params.id } })
+    await users.updateOne({ _id: req.params.id }, { $pull: { sentReq: req.user } })
+    res.status(200).json({ message: "Success" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: 'internal server error. unable to take this request. pls try again later.' })
+  }
+}

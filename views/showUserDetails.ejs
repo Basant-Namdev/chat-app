@@ -63,8 +63,9 @@
           style="color: white; background: none;border: 2px solid white;cursor: not-allowed;">Friends</button>
         <button class="btn" id="unfriend">Unfriend</button>
         <% } else if(friendReq) { %>
-          <button class="btn">Accept</button>
-          <button class="btn" style="background-color: red;">delete</button>
+          <button class="btn" id="accept-btn">Accept</button>
+          <button class="btn" style="background-color: red;" id="showUserDetails_deleteReq"
+            onclick="deleteFriendRequest('<%=user._id%>', event, document.querySelector('.count').innerText)">delete</button>
           <% } else if(friendReqSent) { %>
             <button id="sent-btn">Sent</button>
             <button id="cancel-btn" class="btn" style="background-color: red;">cancel</button>
@@ -150,6 +151,36 @@
             alert('technical error');
             console.error(error);
           });
+      }
+      // accept friend request
+      if (event.target.id === 'accept-btn') {
+        try {
+          socket.emit('friend request accept', { from: id });
+          socket.on('req Accepted ack', (friend) => {
+            const url = `/dashbord/showUserDetails?userId=${id}`
+            fetch(url, {
+              method: 'GET',
+              headers: {
+                'Accept': 'text/html'
+              }
+            })
+              .then(response => response.text())
+              .then((html) => {
+                document.querySelector('.webPageCont').innerHTML = html;
+                eval(document.querySelector('.webPageCont').querySelector('#js').text);
+              })
+              .catch(error => console.error('Error fetching webpage:', error));
+            if (document.querySelector('.count').innerText == 1) {
+              // when we remove first element then second element shifts at the index of first element
+              document.querySelectorAll('.count')[0].remove();
+            } else {
+              document.querySelectorAll('.count')[0].innerText = count - 1
+            }
+          })
+        } catch (error) {
+          console.log(error);
+          alert('unable to take this request.try again later.');
+        }
       }
     });
 

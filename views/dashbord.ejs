@@ -104,6 +104,7 @@
             socket.emit('friend request accept', { from: username });
             socket.on('req Accepted ack', (friend) => {
                 if (count == 1) {
+                    // when we remove first element then second element shifts at the index of first element
                     document.querySelectorAll('.count')[0].remove();
                     document.querySelectorAll('.count')[0].remove();
                 } else {
@@ -236,6 +237,53 @@
                         })
                         .catch(error => console.error('Error fetching webpage:', error));
                 });
+            }
+        }
+
+        // this function delete  the friend request and it is used in friends.ejs and showUserDetails.ejs
+        async function deleteFriendRequest(id, event, count) {
+            try {
+                const url = `/dashbord/delete-friend-request/${id}`;
+                const response = await fetch(url, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                if (response.ok) {
+                    if (event.target.id == 'showUserDetails_deleteReq') {
+                        document.getElementById('btn-container').innerHTML = '';
+                        let connect = document.createElement('button');
+                        connect.textContent = 'connect';
+                        connect.id = 'connect-btn';
+                        connect.className = 'btn';
+                        document.getElementById('btn-container').appendChild(connect);
+                        if (count == 1) {
+                            document.querySelectorAll('.count')[0].remove()
+                        } else {
+                            document.querySelectorAll('.count')[0].innerText = count - 1
+                        }
+                    }
+                    if (event.target.id == 'friends_deleteReq') {
+                        console.log(event.target.closest('.user-container'));
+
+                        event.target.closest('.user-container').remove();
+                        if (count == 1) {
+                            // when we remove first element then second element shifts at the index of first element
+                            document.querySelectorAll('.count')[0].remove()
+                            document.querySelectorAll('.count')[0].remove()
+                        } else {
+                            document.querySelectorAll('.count')[0].innerText = count - 1
+                            document.querySelectorAll('.count')[1].innerText = count - 1
+                        }
+                    }
+
+                } else {
+                    alert('unable to take this request.try again later.');
+                }
+            } catch (error) {
+                console.log(error);
+                alert('unable to take this request.try again later.');
             }
         }
     </script>

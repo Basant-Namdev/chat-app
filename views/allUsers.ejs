@@ -116,7 +116,7 @@
                     </div>
                     <div class="btn">
                         <button class="accpet-btn username" data-user="<%= user[i]._id%>">Accpet</button>
-                        <div><i class="fa-solid fa-square-xmark cancel"></i></div>
+                        <div><i class="fa-solid fa-square-xmark cancel" id="allUsers_deleteReq"></i></div>
                     </div>
                 </div>
                 <% } else if(loginUser.friends.includes(user[i]._id)) { %>

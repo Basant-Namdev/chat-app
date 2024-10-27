@@ -17,5 +17,6 @@ router
      .post('/changeProfile', upload.single('image') , inController.changeProfile)
      .patch('/:id',inController.unFriend)
      .patch('/cancel-sent-request/:id',inController.cancelSentRequest)
+     .patch('/delete-friend-request/:id',inController.deleteFriendRequest)
       
 exports.router = router;
