@@ -21,11 +21,9 @@
                 <li class="menu menuFunc">
                     <i class="fa-solid fa-user-group"></i>
                     <span class="menuText">friends</span>
-                    <% if(reqCount>0) { %>
-                        <span class="count">
+                        <span class="dashbord-count">
                             <%=reqCount%>
                         </span>
-                        <% } %>
                 </li>
                 <li class="menu menuFunc">
                     <i class="fa-solid fa-users-between-lines"></i>
@@ -97,6 +95,28 @@
             })
         }
 
+        // settiing the friend request count 
+        let friendReq_Count = `<%=reqCount%>`        
+        if (friendReq_Count === '0') {
+            document.querySelector('.dashbord-count').style.display = 'none'
+        }
+        if ((document.querySelector('.friends-count'))&&(friendReq_Count == 0)) {
+            document.querySelector('.friends-count').style.display = 'none'
+            }
+        socket.on('friendRequest', (friendRequest,count) => {            
+            if (friendReq_Count == 0) {
+                document.querySelector('.dashbord-count').style.display = "block"
+                document.querySelector('.dashbord-count').style.display = "inline-block"
+            }
+            if ((document.querySelector('.friends-count'))&&(friendReq_Count == 0)) {
+                document.querySelector('.friends-count').style.display = "block"
+                document.querySelector('.friends-count').style.display = "inline-block"
+            }
+            friendReq_Count = count
+            document.querySelector('.dashbord-count').innerText = count 
+            // document.querySelector('.friends-count').innerText = count 
+        })
+        
         // accepting friend request (this code is belong to friends.ejs.)
         function acceptFriendRequest(btn, count) {
             const username = btn.dataset.user;
@@ -104,14 +124,15 @@
             socket.emit('friend request accept', { from: username });
             socket.on('req Accepted ack', (friend) => {
                 if (count == 1) {
-                    // when we remove first element then second element shifts at the index of first element
-                    document.querySelectorAll('.count')[0].remove();
-                    document.querySelectorAll('.count')[0].remove();
+                    friendReq_Count = 0
+                    document.querySelector('.dashbord-count').style.display = 'none';
+                    document.querySelector('.friends-count').style.display = 'none';
                 } else {
-                    document.querySelectorAll('.count')[0].innerText = count - 1
-                    document.querySelectorAll('.count')[1].innerText = count - 1
+                    document.querySelector('.dashbord-count').innerText = count - 1
+                    document.querySelector('.friends-count').innerText = count - 1
                 }
                 parentElement.remove();
+                
                 document.getElementById('friends').innerHTML += ` 
                 <div class="user-container">
                 <div class="user">
@@ -259,22 +280,21 @@
                         connect.className = 'btn';
                         document.getElementById('btn-container').appendChild(connect);
                         if (count == 1) {
-                            document.querySelectorAll('.count')[0].remove()
+                            friendReq_Count = 0
+                            document.querySelector('.dashbord-count').style.display = 'none'
                         } else {
-                            document.querySelectorAll('.count')[0].innerText = count - 1
+                            document.querySelector('.dashbord-count').innerText = count - 1
                         }
                     }
-                    if (event.target.id == 'friends_deleteReq') {
-                        console.log(event.target.closest('.user-container'));
-
+                    if (event.target.id == 'friends_deleteReq') {                        
                         event.target.closest('.user-container').remove();
                         if (count == 1) {
-                            // when we remove first element then second element shifts at the index of first element
-                            document.querySelectorAll('.count')[0].remove()
-                            document.querySelectorAll('.count')[0].remove()
+                            friendReq_Count = 0
+                            document.querySelector('.dashbord-count').style.display = 'none'
+                            document.querySelector('.friends-count').style.display = 'none'
                         } else {
-                            document.querySelectorAll('.count')[0].innerText = count - 1
-                            document.querySelectorAll('.count')[1].innerText = count - 1
+                            document.querySelector('.dashbord-count').innerText = count - 1
+                            document.querySelector('.friends-count').innerText = count - 1
                         }
                     }
 

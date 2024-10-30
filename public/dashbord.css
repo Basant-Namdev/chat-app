@@ -208,7 +208,7 @@ body {
     font-weight: bold;
     cursor: pointer;
 }
-.count{
+.dashbord-count{
     display: inline-block;
     text-align: center;
     color: white;

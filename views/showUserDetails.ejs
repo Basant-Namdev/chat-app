@@ -65,7 +65,7 @@
         <% } else if(friendReq) { %>
           <button class="btn" id="accept-btn">Accept</button>
           <button class="btn" style="background-color: red;" id="showUserDetails_deleteReq"
-            onclick="deleteFriendRequest('<%=user._id%>', event, document.querySelector('.count').innerText)">delete</button>
+            onclick="deleteFriendRequest('<%=user._id%>', event, document.querySelector('.dashbord-count').innerText)">delete</button>
           <% } else if(friendReqSent) { %>
             <button id="sent-btn">Sent</button>
             <button id="cancel-btn" class="btn" style="background-color: red;">cancel</button>
@@ -170,11 +170,11 @@
                 eval(document.querySelector('.webPageCont').querySelector('#js').text);
               })
               .catch(error => console.error('Error fetching webpage:', error));
-            if (document.querySelector('.count').innerText == 1) {
-              // when we remove first element then second element shifts at the index of first element
-              document.querySelectorAll('.count')[0].remove();
+            if (document.querySelector('.dashbord-count').innerText == 1) {
+              friendReq_Count = 0
+              document.querySelector('.dashbord-count').style.display = "none";
             } else {
-              document.querySelectorAll('.count')[0].innerText = count - 1
+              document.querySelector('.dashbord-count').innerText = count - 1
             }
           })
         } catch (error) {

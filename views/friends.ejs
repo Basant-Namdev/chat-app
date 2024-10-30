@@ -80,7 +80,7 @@
             display: none;
         }
 
-        .count {
+        .friends-count {
             display: inline-block;
             text-align: center;
             color: white;
@@ -100,11 +100,9 @@
         <div style="padding: .5rem;display: flex;justify-content: space-between;">
             <p style="color: white;">
                 friend requests
-                <% if(friendReq.length>0) { %>
-                    <span class="count">
-                        <%=friendReq.length%>
-                    </span>
-                    <% } %>
+                <span class="friends-count">
+                    <%=friendReq.length%>
+                </span>
             </p>
             <span>
                 <i class="fa-solid fa-angle-up arrow"></i><i class="fa-solid fa-angle-down arrow"></i>
@@ -121,8 +119,10 @@
                     </div>
                     <div class="btn">
                         <button class="accpet-btn username" data-user="<%= friendReq[i]._id%>"
-                            onclick="acceptFriendRequest(this, document.querySelector('.count').innerText)">Accpet</button>
-                        <div><i class="fa-solid fa-square-xmark cancel" id="friends_deleteReq" onclick="deleteFriendRequest('<%=friendReq[i]._id%>', event, document.querySelector('.count').innerText)"></i></div>
+                            onclick="acceptFriendRequest(this, document.querySelector('.friends-count').innerText)">Accpet</button>
+                        <div><i class="fa-solid fa-square-xmark cancel" id="friends_deleteReq"
+                                onclick="deleteFriendRequest('<%=friendReq[i]._id%>', event, document.querySelector('.friends-count').innerText)"></i>
+                        </div>
                     </div>
                 </div>
                 <% } %>
@@ -147,7 +147,10 @@
 
     <script src="https://kit.fontawesome.com/126cda3aca.js" crossorigin="anonymous"></script>
     <script id="js">
-
+        let Req_Count = `<%=friendReq.length%>`
+        if (Req_Count == 0) {
+            document.querySelector('.friends-count').style.display = 'none'
+        }
         // showing friend request count
         const arrowIcons = document.getElementsByClassName('arrow');
 
@@ -167,24 +170,67 @@
         }
 
         // showing user in the list of friend requests
-        socket.on('friendRequest', (friendReq,count) => {
-            document.getElementById('friendReq').innerHTML += `<div class="user">
-                <img src="${friendReq.profile}" alt="">
-                <span>
-                    ${friendReq.name}
-                </span>
-            </div>
-            <div class="btn">
-                <button class="accpet-btn username" data-user="${friendReq._id}" onclick="acceptFriendRequest(this)">Accpet</button>
-                <div><i class="fa-solid fa-square-xmark cancel"></i></div>
-            </div>`
-            document.querySelectorAll('.count')[0].innerText = count + 1
-            document.querySelectorAll('.count')[1].innerText = count + 1
-        })
+        socket.on('friendRequest', (friendReq, count) => {
+                // Create the main container
+                const userReqContainer = document.createElement('div');
+                userReqContainer.className = 'user-req-container user-container';
+
+                // Create the user div
+                const userDiv = document.createElement('div');
+                userDiv.className = 'user';
+                userDiv.setAttribute('data-user', friendReq._id);
+
+                // Create the image element
+                const img = document.createElement('img');
+                img.src = friendReq.profile;
+                img.alt = '';
+
+                // Create the span for the name
+                const span = document.createElement('span');
+                span.textContent = friendReq.name;
+
+                // Append the image and span to the user div
+                userDiv.appendChild(img);
+                userDiv.appendChild(span);
+
+                // Create the button container
+                const btnDiv = document.createElement('div');
+                btnDiv.className = 'btn';
+
+                // Create the accept button
+                const acceptButton = document.createElement('button');
+                acceptButton.className = 'accpet-btn username';
+                acceptButton.setAttribute('data-user', friendReq._id);
+                acceptButton.textContent = 'Accpet';
+                acceptButton.onclick = function () {
+                    acceptFriendRequest(this, document.querySelector('.friends-count').innerText);
+                };
+
+                // Create the cancel icon
+                const cancelDiv = document.createElement('div');
+                const cancelIcon = document.createElement('i');
+                cancelIcon.className = 'fa-solid fa-square-xmark cancel';
+                cancelIcon.id = 'friends_deleteReq';
+                cancelIcon.onclick = function (event) {
+                    deleteFriendRequest(friendReq._id, event, document.querySelector('.friends-count').innerText);
+                };
+
+                // Append the accept button and cancel icon to the button container
+                cancelDiv.appendChild(cancelIcon);
+                btnDiv.appendChild(acceptButton);
+                btnDiv.appendChild(cancelDiv);
+
+                // Append the user div and button container to the main container
+                userReqContainer.appendChild(userDiv);
+                userReqContainer.appendChild(btnDiv);
+
+                document.getElementById('requests').appendChild(userReqContainer);
+                document.querySelector('.friends-count').innerText = count
+            })
 
         // accepting friend request (due to scope issue acceptFriendRequest(btn) function is moved in dashbord.ejs)
 
-        // showing user in the list of reciever's friends
+        // showing user in the list of sender's friends
         socket.on('req Accepted', (friend) => {
             document.getElementById('friends').innerHTML += `<div class="user">
                         <img src="${friend.profile}" alt="">
@@ -197,6 +243,7 @@
                             message</button>
                     </div>`
         })
+
 
         showUserDetails()
     </script>
