@@ -18,5 +18,6 @@ router
      .patch('/:id',inController.unFriend)
      .patch('/cancel-sent-request/:id',inController.cancelSentRequest)
      .patch('/delete-friend-request/:id',inController.deleteFriendRequest)
+     .get('/userChats',inController.userChats)
       
 exports.router = router;

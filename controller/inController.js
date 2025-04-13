@@ -223,11 +223,45 @@ exports.cancelSentRequest = async (req, res) => {
   }
 }
 // it delete the friend request
-exports.deleteFriendRequest = async (req,res)=>{
+exports.deleteFriendRequest = async (req, res) => {
   try {
     await users.updateOne({ _id: req.user }, { $pull: { friendReq: req.params.id } })
     await users.updateOne({ _id: req.params.id }, { $pull: { sentReq: req.user } })
     res.status(200).json({ message: "Success" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: 'internal server error. unable to take this request. pls try again later.' })
+  }
+}
+exports.userChats = async (req, res) => {
+  try {
+    const userId = new mongoose.Types.ObjectId(req.user);
+    const userChats = await chats.find({
+      $or: [
+        { sender: userId },
+        { reciever: userId }
+      ]
+    });
+
+    const userIdSet = new Set();
+
+    userChats.forEach(chat => {
+      const senderId = chat.sender.toString();
+      const receiverId = chat.reciever.toString();
+      const currentUserId = userId.toString();
+
+      if (senderId !== currentUserId) userIdSet.add(senderId);
+      if (receiverId !== currentUserId) userIdSet.add(receiverId);
+    });
+
+    const otherUserIds = Array.from(userIdSet).map(id => id !== 'undefined' ? id.toString() : console.log(id));
+    console.log(otherUserIds);
+
+    const userList = await users.find(
+      { _id: { $in: otherUserIds } },
+      '-password'
+    );
+    myFunctions.renderView(res, 'userChats', { chatUser: userList });
   } catch (error) {
     console.log(error);
     res.status(500).send({ message: 'internal server error. unable to take this request. pls try again later.' })
