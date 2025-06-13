@@ -32,7 +32,7 @@ body {
     flex: 0 0 25rem;
     height: 100vh;
     /* overflow: scroll; */
-    
+
 }
 
 .user {
@@ -285,7 +285,8 @@ body {
 .logout-title {
     display: none;
 }
-.menuFunc.active{
+
+.menuFunc.active {
     color: #00fdfd;
 }
 
@@ -319,15 +320,17 @@ body {
     #send {
         width: 25% !important;
     }
-    #msg-cont{
+
+    #msg-cont {
         height: 82vh;
     }
 }
 
 @media screen and (max-width : 500px) {
-    #msg-cont{
+    #msg-cont {
         height: 82vh;
     }
+
     #menu-cont {
         display: flex;
         justify-content: space-around;
@@ -359,11 +362,18 @@ body {
     }
 
     .webPageCont {
-        height: 93vh;
+        position: fixed;
+        height: 100vh;
+        width: -webkit-fill-available;
+        top: 1px;
         flex-basis: 100% !important;
-        padding: 1.5rem !important;
         margin: 3rem 0;
         flex: 0 0;
+    }
+
+    #reset-pass-cont>h1 {
+        position: absolute;
+        top: 3rem !important;
     }
 
     #send {
