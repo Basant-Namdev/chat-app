@@ -136,6 +136,7 @@ exports.logOut = (req, res, next) => {
 exports.initializePass = (passport) => {
   passport.use(new localStrategy(async function verify(username, password, done) {
     const user = await users.findOne({ username });
+console.log(user);
 
     if (!user) { return done(null, false); }
 
@@ -151,21 +152,21 @@ exports.initializePass = (passport) => {
     });
 
   }));
-  passport.use(new googleStrategy({
-    clientID : process.env.GOOGLE_CLIENT_ID,
-    clientSecret : process.env.GOOGLE_SECRET_KEY,
-    callbackURL : "/auth/google/callback"
-  },async(accessToken,refreshToken,profile,done)=>{
-    try {
-      let user = await users.findOne({username : profile.emails[0].value})
-      if(!user){
-        user = await users.create({
-          name : profile.displayName,
-          username : profile.emails[0].value,
-          profile : profile.photos[0].value,
-          authType: "google",
-        })
-      }
+    passport.use(new googleStrategy({
+      clientID : process.env.GOOGLE_CLIENT_ID,
+      clientSecret : process.env.GOOGLE_SECRET_KEY,
+      callbackURL: process.env.ENVIRONMENT !== 'development' ? process.env.GOOGLE_CALLBACK_URL :  process.env.GOOGLE_CALLBACK_URL_LOCAL
+    },async(accessToken,refreshToken,profile,done)=>{
+      try {
+        let user = await users.findOne({username : profile.emails[0].value})
+        if(!user){
+          user = await users.create({
+            name : profile.displayName,
+            username : profile.emails[0].value,
+            profile : profile.photos[0].value,
+            authType: "google",
+          })
+        }
       return done(null,user)
     } catch (error) {
       return done(error, null);
