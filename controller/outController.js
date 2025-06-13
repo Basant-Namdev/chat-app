@@ -157,7 +157,7 @@ exports.initializePass = (passport) => {
     callbackURL : "/auth/google/callback"
   },async(accessToken,refreshToken,profile,done)=>{
     try {
-      const user = await users.findOne({username : profile.emails[0].value})
+      let user = await users.findOne({username : profile.emails[0].value})
       if(!user){
         user = await users.create({
           name : profile.displayName,
