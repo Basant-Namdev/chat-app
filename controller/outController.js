@@ -155,7 +155,7 @@ console.log(user);
     passport.use(new googleStrategy({
       clientID : process.env.GOOGLE_CLIENT_ID,
       clientSecret : process.env.GOOGLE_SECRET_KEY,
-      callbackURL: process.env.ENVIRONMENT !== 'development' ? process.env.GOOGLE_CALLBACK_URL :  process.env.GOOGLE_CALLBACK_URL_LOCAL
+      callbackURL: process.env.ENVIRONMENT !== 'development' ? process.env.GOOGLE_CALLBACK_URL_PRO :  process.env.GOOGLE_CALLBACK_URL_LOCAL
     },async(accessToken,refreshToken,profile,done)=>{
       try {
         let user = await users.findOne({username : profile.emails[0].value})
