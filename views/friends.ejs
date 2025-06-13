@@ -6,14 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        .btn {
+        /* .btn {
             display: flex;
             position: relative;
             top: -3.5rem;
             left: 15rem;
             width: 38%;
             justify-content: space-between;
-        }
+        } */
 
         .accpet-btn {
             background-color: #17aa17;
@@ -59,10 +59,10 @@
             cursor: pointer;
         }
 
-        .user-req-container,
-        .user-container {
-            height: 5.7rem;
-        }
+        /* .user-req-container,
+            .user-container {
+                height: 5.7rem;
+            } */
 
         #friendReq {
             box-shadow: 0px 0px 2px white;
@@ -96,6 +96,9 @@
 
 <body>
     <input type="search" name="search" id="search" placeholder="search here...">
+    <div style="height: 90vh; overflow-y: auto; 
+    scrollbar-width: none;
+    -ms-overflow-style: none;"">
     <div id="friendReq">
         <div style="padding: .5rem;display: flex;justify-content: space-between;">
             <p style="color: white;">
@@ -108,7 +111,9 @@
                 <i class="fa-solid fa-angle-up arrow"></i><i class="fa-solid fa-angle-down arrow"></i>
             </span>
         </div>
-        <div id="requests" style="display: none;">
+        <div id="requests" style="display: none; height: 30vh; overflow-y: auto; 
+    scrollbar-width: none;
+    -ms-overflow-style: none;">
             <% for(let i=0; i<friendReq.length ; i++) { %>
                 <div class="user-req-container user-container">
                     <div class="user" data-user="<%= friendReq[i]._id%>">
@@ -117,8 +122,9 @@
                             <%= friendReq[i].name%>
                         </span>
                     </div>
-                    <div class="btn">
-                        <button class="accpet-btn username" data-user="<%= friendReq[i]._id%>"
+                    <div class="btn" style="display: flex; ">
+                        <button class="accpet-btn username" style="margin-right: .7rem;"
+                            data-user="<%= friendReq[i]._id%>"
                             onclick="acceptFriendRequest(this, document.querySelector('.friends-count').innerText)">Accpet</button>
                         <div><i class="fa-solid fa-square-xmark cancel" id="friends_deleteReq"
                                 onclick="deleteFriendRequest('<%=friendReq[i]._id%>', event, document.querySelector('.friends-count').innerText)"></i>
@@ -128,8 +134,10 @@
                 <% } %>
         </div>
     </div>
-    <div id="friends">
-        <% for(let i=0; i<friends.length ; i++) { %>
+    <div id="friends" style="height: 82vh; overflow-y: auto; 
+    scrollbar-width: none;
+    -ms-overflow-style: none;">
+        <% if(friends.length > 0) { for(let i=0; i<friends.length ; i++) { %>
             <div class="user-container">
                 <div class="user" data-user="<%= friends[i]._id%>">
                     <img src="<%= friends[i].profile%>" alt="">
@@ -142,7 +150,10 @@
                         message</button>
                 </div>
             </div>
-            <% } %>
+            <% }} else { %>
+                <div style="color: white; text-align: center;margin-top: 3rem;">No Friends</div>
+            <% }%>
+    </div>
     </div>
 
     <script src="https://kit.fontawesome.com/126cda3aca.js" crossorigin="anonymous"></script>
@@ -168,65 +179,87 @@
                 }
             });
         }
+        // Function to filter users by name in both friend requests and friends lists
+        function filterUsers() {
+            const filter = document.getElementById('search').value.toLowerCase();
+
+            // Filter friend requests
+            const friendReqContainers = document.querySelectorAll('#requests .user-req-container');
+            friendReqContainers.forEach(container => {
+                const name = container.querySelector('.user span').textContent.toLowerCase();
+                container.style.display = name.includes(filter) ? '' : 'none';
+            });
+
+            // Filter friends list
+            const friendContainers = document.querySelectorAll('#friends .user-container');
+            friendContainers.forEach(container => {
+                const name = container.querySelector('.user span').textContent.toLowerCase();
+                container.style.display = name.includes(filter) ? '' : 'none';
+            });
+        }
+
+        // Attach search input listener
+        document.getElementById('search').addEventListener('input', filterUsers);
+
 
         // showing user in the list of friend requests
         socket.on('friendRequest', (friendReq, count) => {
-                // Create the main container
-                const userReqContainer = document.createElement('div');
-                userReqContainer.className = 'user-req-container user-container';
+            // Create the main container
+            const userReqContainer = document.createElement('div');
+            userReqContainer.className = 'user-req-container user-container';
 
-                // Create the user div
-                const userDiv = document.createElement('div');
-                userDiv.className = 'user';
-                userDiv.setAttribute('data-user', friendReq._id);
+            // Create the user div
+            const userDiv = document.createElement('div');
+            userDiv.className = 'user';
+            userDiv.setAttribute('data-user', friendReq._id);
 
-                // Create the image element
-                const img = document.createElement('img');
-                img.src = friendReq.profile;
-                img.alt = '';
+            // Create the image element
+            const img = document.createElement('img');
+            img.src = friendReq.profile;
+            img.alt = '';
 
-                // Create the span for the name
-                const span = document.createElement('span');
-                span.textContent = friendReq.name;
+            // Create the span for the name
+            const span = document.createElement('span');
+            span.textContent = friendReq.name;
 
-                // Append the image and span to the user div
-                userDiv.appendChild(img);
-                userDiv.appendChild(span);
+            // Append the image and span to the user div
+            userDiv.appendChild(img);
+            userDiv.appendChild(span);
 
-                // Create the button container
-                const btnDiv = document.createElement('div');
-                btnDiv.className = 'btn';
+            // Create the button container
+            const btnDiv = document.createElement('div');
+            btnDiv.className = 'btn';
 
-                // Create the accept button
-                const acceptButton = document.createElement('button');
-                acceptButton.className = 'accpet-btn username';
-                acceptButton.setAttribute('data-user', friendReq._id);
-                acceptButton.textContent = 'Accpet';
-                acceptButton.onclick = function () {
-                    acceptFriendRequest(this, document.querySelector('.friends-count').innerText);
-                };
+            // Create the accept button
+            const acceptButton = document.createElement('button');
+            acceptButton.className = 'accpet-btn username';
+            acceptButton.setAttribute('data-user', friendReq._id);
+            acceptButton.textContent = 'Accpet';
+            acceptButton.onclick = function () {
+                acceptFriendRequest(this, document.querySelector('.friends-count').innerText);
+            };
 
-                // Create the cancel icon
-                const cancelDiv = document.createElement('div');
-                const cancelIcon = document.createElement('i');
-                cancelIcon.className = 'fa-solid fa-square-xmark cancel';
-                cancelIcon.id = 'friends_deleteReq';
-                cancelIcon.onclick = function (event) {
-                    deleteFriendRequest(friendReq._id, event, document.querySelector('.friends-count').innerText);
-                };
+            // Create the cancel icon
+            const cancelDiv = document.createElement('div');
+            const cancelIcon = document.createElement('i');
+            cancelIcon.className = 'fa-solid fa-square-xmark cancel';
+            cancelIcon.id = 'friends_deleteReq';
+            cancelIcon.onclick = function (event) {
+                deleteFriendRequest(friendReq._id, event, document.querySelector('.friends-count').innerText);
+            };
 
-                // Append the accept button and cancel icon to the button container
-                cancelDiv.appendChild(cancelIcon);
-                btnDiv.appendChild(acceptButton);
-                btnDiv.appendChild(cancelDiv);
+            // Append the accept button and cancel icon to the button container
+            cancelDiv.appendChild(cancelIcon);
+            btnDiv.appendChild(acceptButton);
+            btnDiv.appendChild(cancelDiv);
 
-                // Append the user div and button container to the main container
-                userReqContainer.appendChild(userDiv);
-                userReqContainer.appendChild(btnDiv);
+            // Append the user div and button container to the main container
+            userReqContainer.appendChild(userDiv);
+            userReqContainer.appendChild(btnDiv);
 
-                document.getElementById('requests').appendChild(userReqContainer);
-                document.querySelector('.friends-count').innerText = count
-            })
+            document.getElementById('requests').appendChild(userReqContainer);
+            document.querySelector('.friends-count').innerText = count
+        })
 
         // accepting friend request (due to scope issue acceptFriendRequest(btn) function is moved in dashbord.ejs)
 

@@ -6,14 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        .btn {
+        /* .btn {
             display: flex;
             position: relative;
             top: -3.5rem;
             left: 15rem;
             width: 38%;
             justify-content: space-between;
-        }
+        } */
 
         .connect-btn {
             background-color: cadetblue;
@@ -85,41 +85,19 @@
             cursor: context-menu;
         }
 
-        .user-container {
+        /* .user-container {
             height: 5.7rem;
-        }
+        } */
     </style>
 </head>
 
 <body>
     <input type="search" name="search" id="search" placeholder="search here...">
-    <% for(let i=0; i<user.length ; i++) { %>
-        <% if(loginUser.sentReq.includes(user[i]._id)) { %>
-            <div class="user-container">
-                <div class="user" data-user="<%= user[i]._id%>">
-                    <img src="<%= user[i].profile%>" alt="">
-                    <span>
-                        <%= user[i].name%>
-                    </span>
-                </div>
-                <div class="btn">
-                    <button class="req-sent-btn" data-user="<%= user[i]._id%>">Sent</button>
-                </div>
-            </div>
-            <% } else if(loginUser.friendReq.includes(user[i]._id)) { %>
-                <div class="user-container">
-                    <div class="user" data-user="<%= user[i]._id%>">
-                        <img src="<%= user[i].profile%>" alt="">
-                        <span>
-                            <%= user[i].name%>
-                        </span>
-                    </div>
-                    <div class="btn">
-                        <button class="accpet-btn username" data-user="<%= user[i]._id%>">Accpet</button>
-                        <div><i class="fa-solid fa-square-xmark cancel" id="allUsers_deleteReq"></i></div>
-                    </div>
-                </div>
-                <% } else if(loginUser.friends.includes(user[i]._id)) { %>
+    <div style="height: 85vh; overflow-y: auto; 
+    scrollbar-width: none;
+    -ms-overflow-style: none;">
+        <% if(user.length> 0) { for(let i=0; i<user.length ; i++) { %>
+                <% if(loginUser.sentReq.includes(user[i]._id)) { %>
                     <div class="user-container">
                         <div class="user" data-user="<%= user[i]._id%>">
                             <img src="<%= user[i].profile%>" alt="">
@@ -128,10 +106,10 @@
                             </span>
                         </div>
                         <div class="btn">
-                            <div class="friends">Friend</div>
+                            <button class="req-sent-btn" data-user="<%= user[i]._id%>">Sent</button>
                         </div>
                     </div>
-                    <% } else { %>
+                    <% } else if(loginUser.friendReq.includes(user[i]._id)) { %>
                         <div class="user-container">
                             <div class="user" data-user="<%= user[i]._id%>">
                                 <img src="<%= user[i].profile%>" alt="">
@@ -139,35 +117,80 @@
                                     <%= user[i].name%>
                                 </span>
                             </div>
-                            <div class="btn">
-                                <button class="connect-btn username" data-user="<%= user[i]._id%>">connect</button>
+                            <div class="btn" style="display: flex;">
+                                <button class="accpet-btn username" style="margin-right: .7rem;"
+                                    data-user="<%= user[i]._id%>">Accpet</button>
+                                <div><i class="fa-solid fa-square-xmark cancel" id="allUsers_deleteReq"></i></div>
                             </div>
                         </div>
-                        <% }} %>
+                        <% } else if(loginUser.friends.includes(user[i]._id)) { %>
+                            <div class="user-container">
+                                <div class="user" data-user="<%= user[i]._id%>">
+                                    <img src="<%= user[i].profile%>" alt="">
+                                    <span>
+                                        <%= user[i].name%>
+                                    </span>
+                                </div>
+                                <div class="btn">
+                                    <div class="friends">Friend</div>
+                                </div>
+                            </div>
+                            <% } else { %>
+                                <div class="user-container">
+                                    <div class="user" data-user="<%= user[i]._id%>">
+                                        <img src="<%= user[i].profile%>" alt="">
+                                        <span>
+                                            <%= user[i].name%>
+                                        </span>
+                                    </div>
+                                    <div class="btn">
+                                        <button class="connect-btn username"
+                                            data-user="<%= user[i]._id%>">connect</button>
+                                    </div>
+                                </div>
+                                <% }}} else { %>
+                                    <div style="color: white; text-align: center;margin-top: 3rem;">No users</div>
+                                    <% }%>
+    </div>
 
-                            <script src="https://kit.fontawesome.com/126cda3aca.js" crossorigin="anonymous"></script>
-                            <script id="js">
+    <script src="https://kit.fontawesome.com/126cda3aca.js" crossorigin="anonymous"></script>
+    <script id="js">
 
-                                // sending request to another user
-                                const connectBtns = document.querySelectorAll('.connect-btn')
+        // sending request to another user
+        const connectBtns = document.querySelectorAll('.connect-btn')
 
-                                connectBtns.forEach((btn) => {
-                                    let clicked = false;
-                                    btn.addEventListener('click', async () => {
-                                        if (clicked) return;
-                                        clicked = true;
-                                        // changing button style
-                                        btn.style.backgroundColor = '#808080ab';
-                                        btn.innerText = 'Sent';
-                                        const username = btn.dataset.user;
-                                        socket.emit('friend request sent', { to: username });
-                                    });
-                                });
-                                document.querySelectorAll('.user-container').forEach((div) => {
-                                    div.addEventListener('click', () => showUserDetails(div));
-                                });
-                                showUserDetails()
-                            </script>
+        connectBtns.forEach((btn) => {
+            let clicked = false;
+            btn.addEventListener('click', async () => {
+                if (clicked) return;
+                clicked = true;
+                // changing button style
+                btn.style.backgroundColor = '#808080ab';
+                btn.innerText = 'Sent';
+                const username = btn.dataset.user;
+                socket.emit('friend request sent', { to: username });
+            });
+        });
+        document.querySelectorAll('.user-container').forEach((div) => {
+            div.addEventListener('click', () => showUserDetails(div));
+        });
+        showUserDetails()
+        // --- SEARCH FILTER FUNCTIONALITY ---
+        const searchInput = document.getElementById('search');
+        searchInput.addEventListener('input', function () {
+            const filter = this.value.toLowerCase();
+            const userContainers = document.querySelectorAll('.user-container');
+
+            userContainers.forEach(container => {
+                const userName = container.querySelector('span').textContent.toLowerCase();
+                if (userName.includes(filter)) {
+                    container.style.display = '';
+                } else {
+                    container.style.display = 'none';
+                }
+            });
+        });
+    </script>
 
 </body>
 

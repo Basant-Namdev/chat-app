@@ -1,105 +1,74 @@
-const signUpFrom = document.getElementById("sign-up-form");
+const signUpFrom = document.getElementById("signup-form");
 const loginForm = document.getElementById("login-form");
+const btnLogin = document.getElementById("btn-login");
+const btnSignup = document.getElementById("btn-signup");
 
 const topSign = document.getElementById("top-sign-btn");
 const topLog = document.getElementById("top-log-btn");
+const googleBtn = document.querySelectorAll('.google-btn-cont')
 
-function toggelSignUp() {
-    topSign.style.background = "cadetblue"
-    topLog.style.background = "initial";
-    loginForm.style.display = "none";
-    signUpFrom.style.display = "block";
-};
-function toggelLogin() {
-    topLog.style.background = "cadetblue";
-    topSign.style.background = "initial"
-    signUpFrom.style.display = "none";
-    loginForm.style.display = "block";
-};
-function closeForm() {
-    document.getElementById('form-back').style.display = "none";
-    document.getElementById('contact-form').style.visibility = "visible";
-}
-function eye() {
-    if (document.getElementById('pass').type == "password") {
-        document.getElementById('pass').type = "text";
-        document.querySelectorAll('.eye')[0].style.visibility = "visible";
-        document.querySelectorAll('.eye')[1].style.visibility = "hidden";
-    } else {
-        document.getElementById('pass').type = "password";
-        document.querySelectorAll('.eye')[0].style.visibility = "hidden";
-        document.querySelectorAll('.eye')[1].style.visibility = "visible";
-    }
-}
-function signEye() {
-    if (document.getElementById('pass-sign').type == "password") {
-        document.getElementById('pass-sign').type = "text";
-        document.querySelectorAll('.sign-eye')[0].style.visibility = "visible";
-        document.querySelectorAll('.sign-eye')[1].style.visibility = "hidden";
-    } else {
-        document.getElementById('pass-sign').type = "password";
-        document.querySelectorAll('.sign-eye')[0].style.visibility = "hidden";
-        document.querySelectorAll('.sign-eye')[1].style.visibility = "visible";
-    }
+btnLogin.addEventListener("click", () => toggleForms("login"));
+btnSignup.addEventListener("click", () => toggleForms("signup"));
+
+function toggleForms(mode) {
+    const loginActive = mode === "login";
+    btnLogin.classList.toggle("active", loginActive);
+    btnSignup.classList.toggle("active", !loginActive);
+    loginForm.classList.toggle("d-none", !loginActive);
+    signUpFrom.classList.toggle("d-none", loginActive);
 }
 
-// form validation
+document.addEventListener("click", (e) => {
+    if (e.target.matches(".eye-icon")) {
+        const targetId = e.target.getAttribute("data-target");
+        const input = document.getElementById(targetId);
+        if (input) {
+            input.type = input.type === "password" ? "text" : "password";
+            e.target.classList.toggle("fa-eye");
+            e.target.classList.toggle("fa-eye-slash");
+        }
+    }
+});
 
 function setError(id, error) {
     let el = document.getElementById(id);
-    el.querySelector('.inpError').innerHTML = error;
+    el.innerHTML = error;
 }
-function clearError() {
-    let ele = document.querySelectorAll('.inpError');
-    ele.forEach(e => {
-        e.innerHTML = "";
-    });
-}
+
 function validateForm() {
-    clearError();
+    document.querySelector('#signup-error').innerHTML = "";
     let returnVal = true;
-    // sign up form validation
-    if (signUpFrom.style.display == "block") {
-        // sign up form validation
-        let name = document.forms['sign-up-form']["name"].value;
-        if (name.length < 3) {
-            setError("sign-name", "*name length is too short.");
-            returnVal = false;
-        }
-        let password = document.forms['sign-up-form']["password"].value;
-        if (password.length < 6) {
-            setError("sign-password", "*password length should be minimum 6.");
-            returnVal = false;
-        }
-        if (!(/[A-Z]/.test(password))) {
-            setError("sign-password", "*password should atleast contain a capital letter");
-            returnVal = false;
-        }
-        if (!(/[a-z]/.test(password))) {
-            setError("sign-password", "*password should atleast contain a small letter");
-            returnVal = false;
-        }
-        if (!(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(password))) {
-            setError("sign-password", "*password should atleast contain a special character");
-            returnVal = false;
-        }
-        let cnfPassword = document.forms['sign-up-form']['cnf-password'].value;
-        if (cnfPassword != password) {
-            setError("sign-cnfpassword", "*passwords do not match.");
-            returnVal = false;
-        }
+    let name = document.forms['sign-up-form']["name"].value;
+    if (name.length < 3) {
+        setError("signup-error", "*name length is too short.");
+        return false;
     }
+    let password = document.forms['sign-up-form']["password"].value;
+    if (password.length < 6) {
+        setError("signup-error", "*password length should be minimum 6.");
+        return false;
+    }
+    if (!(/[A-Z]/.test(password))) {
+        setError("signup-error", "*password should atleast contain a capital letter");
+        return false;
+    }
+    if (!(/[a-z]/.test(password))) {
+        setError("signup-error", "*password should atleast contain a small letter");
+        return false;
+    }
+    if (!(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(password))) {
+        setError("signup-error", "*password should atleast contain a special character");
+        return false;
+    }
+    let cnfPassword = document.forms['sign-up-form']['cnf-password'].value;
+    if (cnfPassword != password) {
+        setError("signup-error", "*passwords do not match.");
+        return false;
+    }
+    // }
     return returnVal;
 }
-function popUp(message) {
-    document.getElementById('form-submitted-cont').style.display = 'block'; // show "Form submitted" message
-    document.getElementById('form-submitted-cont').style.display = 'flex';
-    document.getElementById('form-submitted-message').innerHTML = message;
-}
-// it closes the above popup
-function CloseOK() {
-    document.getElementById('form-submitted-cont').style.display = 'none';
-}
+
 // signUP form error message
 
 signUpFrom.addEventListener('submit', async function (event) {
@@ -125,13 +94,31 @@ signUpFrom.addEventListener('submit', async function (event) {
         });
         const result = await response.json(); // parse response as JSON
         if (result.success) {
-            popUp("You are successfully registered.You can now proceed with login.");
+            swal.fire({
+                icon: 'success',
+                title: 'signup successful',
+                text: "You are successfully registered.You can now proceed with login.",
+                confirmButtonColor: 'green',
+                confirmButtonText: 'Okay'
+            })
         } else {
-            popUp("Something went wrong! try again later.")
+            swal.fire({
+                icon: 'info',
+                title: 'failed',
+                text: "Something went wrong! try again later.",
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Okay'
+            })
             console.error('Error submitting form:', result.error);
         }
     } catch (error) {
-        popUp("Something went wrong! try again later.")
+        swal.fire({
+            icon: 'info',
+            title: 'Internal server error',
+            text: "Something went wrong! try again later.",
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Okay'
+        })
         console.error('Error submitting form:', error);
     }
 });
@@ -141,8 +128,8 @@ signUpFrom.addEventListener('submit', async function (event) {
 loginForm.addEventListener('submit', async function (event) {
     event.preventDefault(); // prevent default form submission
     try {
-        const usernameInput = document.querySelector('#email');
-        const passwordInput = document.querySelector('#pass');
+        const usernameInput = document.querySelector('#login-email');
+        const passwordInput = document.querySelector('#login-password');
         const response = await fetch('/login', {
             method: 'POST',
             headers: {
@@ -157,10 +144,16 @@ loginForm.addEventListener('submit', async function (event) {
         if (result.redirectUrl) {
             window.location.href = result.redirectUrl;
         } else if (!result.success) {
-            document.getElementById('login-auth-failed').innerHTML = "*Invalid username or password!";
+            document.getElementById('login-error').innerHTML = "*Invalid username or password!";
         }
     } catch (error) {
-        popUp("Something went wrong! try again later.")
+        swal.fire({
+            icon: 'info',
+            title: 'Internal server error',
+            text: "Something went wrong! try again later.",
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Okay'
+        })
         console.error('Error submitting form:', error);
     }
 })

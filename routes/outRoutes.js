@@ -11,5 +11,7 @@ router
     .get('/dashbord',outController.isAuth,outController.openDashbord)
     .post('/dashbord/loadChat',outController.loadChat)
     .get('/dashbord/logout', outController.logOut)
+    .get('/auth/google',passport.authenticate('google',{scope:["Profile","email"]}))
+    .get('/auth/google/callback',passport.authenticate('google',{failureRedirect : "/",successRedirect : "/dashbord"}))
     
 exports.router = router;

@@ -4,8 +4,10 @@ const { Schema } = mongoose;
 const userSchema = new Schema({
     name: { type: String, required: true },
     username: { type: String, required: true ,unique : true},
-    password: { type: String, required: true },
+    password: { type: String},
     profile:{type:String},
+    authType : {type : String},
+    googleId : {type:String},
     friendReq: [{ type: String }],
     friends: [{ type: String }],
     sentReq: [{ type: String }]

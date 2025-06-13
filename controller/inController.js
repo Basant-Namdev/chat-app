@@ -70,8 +70,11 @@ exports.acceptRequest = async (sender, reciever, callback) => {
 // loading the users with whom login user has chat
 exports.userChats = async (req, res) => {
   try {
-    const users = await chats.find({ $or: [{ senderId: req.user }, { receiverId: req.user }] })
-    myFunctions.renderView(res, 'userChats', { chatUser: users });
+    const usersChats = await chats.find({ $or: [{ senderId: req.user }, { receiverId: req.user }] })
+    const friendList = await users.findOne({_id : req.user}).select('-password -sentReq -username -friendReq');
+    console.log("hello",friendList);  
+    
+    myFunctions.renderView(res, 'userChats', { chatUser: usersChats,friends : friendList });
 
   } catch (error) {
     console.log(error);
@@ -104,6 +107,9 @@ var salt = bcrypt.genSaltSync(parseInt(process.env.SALT));
 exports.passwordReset = async (req, res) => {
   try {
     const user = await users.findById(req.user);
+    if (user.authType === 'google') {
+      return res.status(200).json({ success: false, message: 'Google users cannot reset password' });
+    }
     const isValid = await bcrypt.compare(req.body.oldPassword, user.password);
     if (!isValid) {
       return res.status(401).json({ success: false, message: 'Invalid old password' });
@@ -116,7 +122,7 @@ exports.passwordReset = async (req, res) => {
         res.status(201).json({ success: true })
       })
       .catch(error => {
-        console.log("Error Creating User", error);
+        console.log("Error saving password", error);
         res.status(500).json({ success: false })
       })
   } catch (err) {
@@ -203,6 +209,10 @@ exports.showUserDetails = async (req, res) => {
 // unfriends an user
 exports.unFriend = async (req, res) => {
   try {
+    const user = await users.findById(req.user);
+    if(!user.friends.includes(req.params.id)) {
+      res.status(404).json({ message: "no user found. Refresh the page" });
+    }
     await users.updateOne({ _id: req.user }, { $pull: { friends: req.params.id } })
     await users.updateOne({ _id: req.params.id }, { $pull: { friends: req.user } })
     res.status(200).send({ success: true });
@@ -214,6 +224,10 @@ exports.unFriend = async (req, res) => {
 // it cancels the sent friend request
 exports.cancelSentRequest = async (req, res) => {
   try {
+    const user = await users.findById(req.user);
+    if(!user.sentReq.includes(req.params.id)) {
+      res.status(404).json({ message: "no request found. Refresh the page" });
+    }
     await users.updateOne({ _id: req.user }, { $pull: { sentReq: req.params.id } })
     await users.updateOne({ _id: req.params.id }, { $pull: { friendReq: req.user } })
     res.status(200).json({ message: "Success" });
@@ -225,6 +239,10 @@ exports.cancelSentRequest = async (req, res) => {
 // it delete the friend request
 exports.deleteFriendRequest = async (req, res) => {
   try {
+    const user = await users.findById(req.user);
+    if(!user.friendReq.includes(req.params.id)) {
+      res.status(404).json({ message: "no request found. Refresh the page" });
+    }
     await users.updateOne({ _id: req.user }, { $pull: { friendReq: req.params.id } })
     await users.updateOne({ _id: req.params.id }, { $pull: { sentReq: req.user } })
     res.status(200).json({ message: "Success" });
@@ -261,7 +279,8 @@ exports.userChats = async (req, res) => {
       { _id: { $in: otherUserIds } },
       '-password'
     );
-    myFunctions.renderView(res, 'userChats', { chatUser: userList });
+    
+    myFunctions.renderView(res, 'userChats', { chatUser: userList});
   } catch (error) {
     console.log(error);
     res.status(500).send({ message: 'internal server error. unable to take this request. pls try again later.' })

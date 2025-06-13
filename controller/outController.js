@@ -5,6 +5,7 @@ const chats = model.chats;
 const mongoose = require('mongoose');
 const passport = require('passport');
 const localStrategy = require('passport-local');
+const googleStrategy = require('passport-google-oauth20')
 const ejs = require('ejs');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
@@ -81,9 +82,9 @@ exports.openDashbord = async (req, res) => {
   try {
     const user = await users.find({ _id: { $ne: req.user } }).select('-password');
     const loginUser = await users.findById(req.user).select('-password');
-    const friendReq = await users.find({ _id: { $in: loginUser.friendReq } }).select('-password -sentReq -username -friends -friendReq');    
+    const friendReq = await users.find({ _id: { $in: loginUser.friendReq } }).select('-password -sentReq -username -friends -friendReq');   
 
-    ejs.renderFile(path.resolve(__dirname, '../views/dashbord.ejs'), { user: user, loginUser:loginUser,reqCount : friendReq.length }, function (err, str) {
+    ejs.renderFile(path.resolve(__dirname, '../views/dashbord.ejs'), { user: user, loginUser:loginUser,reqCount : friendReq.length}, function (err, str) {
       if(!err){res.send(str);}
       else{console.log(err)}
     });
@@ -150,14 +151,32 @@ exports.initializePass = (passport) => {
     });
 
   }));
+  passport.use(new googleStrategy({
+    clientID : process.env.GOOGLE_CLIENT_ID,
+    clientSecret : process.env.GOOGLE_SECRET_KEY,
+    callbackURL : "/auth/google/callback"
+  },async(accessToken,refreshToken,profile,done)=>{
+    try {
+      const user = await users.findOne({username : profile.emails[0].value})
+      if(!user){
+        user = await users.create({
+          name : profile.displayName,
+          username : profile.emails[0].value,
+          profile : profile.photos[0].value,
+          authType: "google",
+        })
+      }
+      return done(null,user)
+    } catch (error) {
+      return done(error, null);
+    }
+  }))
 
   passport.serializeUser((user, done) => {
-    console.log("on");
     done(null, user._id)
   });
 
   passport.deserializeUser(async function (user, done) {
-    console.log("off");
     done(null, user);
   });
 };

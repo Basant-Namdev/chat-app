@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        .btn {
+        /* .btn {
             display: flex;
             position: relative;
             top: -3.5rem;
             left: 15rem;
             width: 38%;
             justify-content: space-between;
-        }
-         #search {
+        } */
+
+        #search {
             color: white;
             width: 98%;
             height: 2.1rem;
@@ -23,29 +25,61 @@
             padding: 1rem;
             font-size: 1rem;
         }
-        .message-opt{
+
+        .message-opt {
             background-color: #808080ab;
             font-size: 1.2rem;
-            padding: 0.4rem;    
+            padding: 0.4rem;
             font-weight: bold;
             border-radius: 1rem;
             cursor: pointer;
         }
+
+        /* @media screen and (max-width : 450px) {
+            
+        } */
     </style>
 </head>
+
 <body>
     <input type="search" name="search" id="search" placeholder="search here...">
-    <% for(let i=0; i < chatUser.length ; i++) { %>
-        <div class="user">
-            <img src="<%= chatUser[i].profile%>" alt="">
-            <span>
-                <%= chatUser[i].name%>
-            </span>
-        </div>
-        <div class="btn">
-            <button class="message-opt" data-user="<%= chatUser[i]._id%>" onclick="chat(event)">Send message</button>
-        </div>
-        <% } %>
-        <script id="js"></script>
+    <div style="height: 85vh; overflow-y: auto; 
+    scrollbar-width: none;
+    -ms-overflow-style: none;">
+        <% if(chatUser.length > 0) { for(let i=0; i < chatUser.length ; i++) { %>
+            <div class="user-container">
+                <div class="user" data-user="<%= chatUser[i]._id%>">
+                    <img src="<%= chatUser[i].profile%>" alt="">
+                    <span>
+                        <%= chatUser[i].name%>
+                    </span>
+                </div>
+                <div class="btn">
+                    <button class="message-opt" data-user="<%= chatUser[i]._id%>" onclick="chat(event)">Send
+                        message</button>
+                </div>
+            </div>
+            <% }} else { %>
+                <div style="color: white; text-align: center;margin-top: 3rem;">No Chats Found</div>
+            <% }%>
+    </div>
+    <script id="js">
+        showUserDetails()
+        const searchInput = document.getElementById('search');
+        searchInput.addEventListener('input', function () {
+            const filter = this.value.toLowerCase();
+            const userContainers = document.querySelectorAll('.user-container');
+
+            userContainers.forEach(container => {
+                const userName = container.querySelector('.user span').textContent.toLowerCase();
+                if (userName.includes(filter)) {
+                    container.style.display = '';
+                } else {
+                    container.style.display = 'none';
+                }
+            });
+        });
+    </script>
 </body>
+
 </html>

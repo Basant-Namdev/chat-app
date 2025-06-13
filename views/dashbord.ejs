@@ -11,19 +11,27 @@
 <body>
     <!-- dashbord container-->
     <div id="cont">
+        <div class="title">
+            <h3>chatlog</h3>
+            <div class="logout-title">
+                <a href="/dashbord/logout" style="color: white ; font-size: 1.5rem;"><i
+                        class="fa-solid fa-right-from-bracket"></i></a>
+                <span style="display: none;">logout</span>
+            </div>
+        </div>
         <!-- menu container -->
         <div id="dashbord" style="background-color: darkslategrey;">
             <ul id="menu-cont">
                 <li class="menu menuFunc">
                     <i class="fa-regular fa-comment-dots"></i>
-                    <span class="menuText">userChats</span>
+                    <span class="menuText" title="user chats">userChats</span>
                 </li>
                 <li class="menu menuFunc">
                     <i class="fa-solid fa-user-group"></i>
                     <span class="menuText">friends</span>
-                        <span class="dashbord-count">
-                            <%=reqCount%>
-                        </span>
+                    <span class="dashbord-count">
+                        <%=reqCount%>
+                    </span>
                 </li>
                 <li class="menu menuFunc">
                     <i class="fa-solid fa-users-between-lines"></i>
@@ -33,8 +41,8 @@
                     <i class="fa-solid fa-key"></i>
                     <span class="menuText">resetPassword</span>
                 </li>
-                <li class="menu menuFunc">
-                    <a href="/dashbord/logout" style="color: black ;"><i class="fa-solid fa-right-from-bracket"></i></a>
+                <li class="menu menuFunc logout-sidenav">
+                    <a href="/dashbord/logout" style="color: white ;"><i class="fa-solid fa-right-from-bracket"></i></a>
                     <span class="menuText" style="display: none;">logout</span>
                 </li>
                 <li id="user-part" class="menuFunc" style="cursor: pointer; display: flex;justify-content: center;">
@@ -46,24 +54,29 @@
         <!-- it contains user list -->
         <div class="webPageCont"></div>
         <!-- it is to establish personal chat -->
-        <div id="personal-chat" style="width: 100%; height: 43.2rem; border: 2px solid grey; position: relative;"">
+        <div id="personal-chat" style="width: 100%; height: 100svh; border: 2px solid grey; position: relative;">
             <div id="personal-chat-child-1">Click on a chat to start a conversation</div>
-        <div id="personal-chat-child-2">
-            <div id="specific-user">
-                <img src="" alt="">
-                <span></span>
-                <i id="cross" onclick="closeChat()" class="fa-regular fa-circle-xmark"></i>
-            </div>
-            <form action="" id="chatCont">
-                <div id="msg-cont"></div>
-                <input type="text" name="message" id="msg" placeholder="Enter your message here" autocomplete="off">
-                <button id="send" type="submit">Send</button>
-            </form>
+            <div id="personal-chat-child-2">
+                <div id="specific-user">
+                    <img src="" alt="">
+                    <span></span>
+                    <i id="cross" onclick="closeChat()" class="fa-regular fa-circle-xmark"></i>
+                </div>
+                <form action="" id="chatCont">
+                    <div id="msg-cont"></div>
+                    <div style="display: flex;">
+                        <input type="text" name="message" id="msg" placeholder="Enter your message here"
+                            autocomplete="off">
+                        <button id="send" type="submit">Send</button>
+                    </div>
+                </form>
 
+            </div>
         </div>
     </div>
-    </div>
     <script src="https://kit.fontawesome.com/126cda3aca.js" crossorigin="anonymous"></script>
+    <!-- Include SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
@@ -74,12 +87,32 @@
                 username: `<%=loginUser._id%>`
             }
         });
+        let openChat;
+        const friends = JSON.parse('<%- JSON.stringify(loginUser.friends) %>');
         const msgScreen = document.getElementById('msg-cont');
         const input = document.getElementById('msg');
         const sender = document.getElementById('send');
         const userList = document.getElementsByClassName('user');
         const menuList = document.getElementsByClassName('menuFunc');
         const menuText = document.getElementsByClassName('menuText');
+
+        document.addEventListener("DOMContentLoaded", function () {
+            loadUserchat()
+            handleResize();
+        });
+        // window.addEventListener('resize', chat);
+
+        function loadUserchat() {
+            fetch('/dashbord/userChats')
+                .then(response => response.text())
+                .then((html) => {
+                    document.querySelector('.webPageCont').innerHTML = html;
+                    menuList[0].classList.add('active');
+                    eval(document.querySelector('.webPageCont').querySelector('#js').text);
+
+                })
+                .catch(error => console.error('Error fetching webpage:', error));
+        }
 
 
         // code for different functionalities of dashbord
@@ -89,6 +122,10 @@
                     .then(response => response.text())
                     .then((html) => {
                         document.querySelector('.webPageCont').innerHTML = html;
+                        for (let j = 0; j < menuList.length; j++) {
+                            menuList[j].classList.remove('active');
+                        }
+                        menuList[i].classList.add('active');
                         eval(document.querySelector('.webPageCont').querySelector('#js').text);
                     })
                     .catch(error => console.error('Error fetching webpage:', error));
@@ -96,27 +133,27 @@
         }
 
         // settiing the friend request count 
-        let friendReq_Count = `<%=reqCount%>`        
+        let friendReq_Count = `<%=reqCount%>`
         if (friendReq_Count === '0') {
             document.querySelector('.dashbord-count').style.display = 'none'
         }
-        if ((document.querySelector('.friends-count'))&&(friendReq_Count == 0)) {
+        if ((document.querySelector('.friends-count')) && (friendReq_Count == 0)) {
             document.querySelector('.friends-count').style.display = 'none'
-            }
-        socket.on('friendRequest', (friendRequest,count) => {            
+        }
+        socket.on('friendRequest', (friendRequest, count) => {
             if (friendReq_Count == 0) {
                 document.querySelector('.dashbord-count').style.display = "block"
                 document.querySelector('.dashbord-count').style.display = "inline-block"
             }
-            if ((document.querySelector('.friends-count'))&&(friendReq_Count == 0)) {
+            if ((document.querySelector('.friends-count')) && (friendReq_Count == 0)) {
                 document.querySelector('.friends-count').style.display = "block"
                 document.querySelector('.friends-count').style.display = "inline-block"
             }
             friendReq_Count = count
-            document.querySelector('.dashbord-count').innerText = count 
+            document.querySelector('.dashbord-count').innerText = count
             // document.querySelector('.friends-count').innerText = count 
         })
-        
+
         // accepting friend request (this code is belong to friends.ejs.)
         function acceptFriendRequest(btn, count) {
             const username = btn.dataset.user;
@@ -132,7 +169,7 @@
                     document.querySelector('.friends-count').innerText = count - 1
                 }
                 parentElement.remove();
-                
+
                 document.getElementById('friends').innerHTML += ` 
                 <div class="user-container">
                 <div class="user">
@@ -147,10 +184,16 @@
                 </div>
             </div>`
             });
+            friends.push(username)
         }
 
         // code for chat functionality
         function chat(e) {
+            openChat = e.target.dataset.user
+            if (window.matchMedia("(max-width: 500px)").matches || window.matchMedia("(max-width: 991px)").matches) {
+                document.querySelector('.webPageCont').style.display = "none"
+                document.querySelector('#personal-chat').style.display = "block"
+            }
             document.getElementById('cross').style.display = "block"
             document.getElementById('personal-chat-child-2').style.display = "block";
             document.getElementById('personal-chat-child-1').style.display = "none";
@@ -172,13 +215,35 @@
                     recieverId: e.target.dataset.user
                 })
             }).then(response => response.json()).then(data => {
-                data.forEach((item) => {
+                data.map((item, index) => {
+                    if (index == 0 || (item.createdAt).split('T')[0] !== (data[index - 1].createdAt).split('T')[0]) {
+                        let dateBox = document.createElement('div')
+                        dateBox.innerText = (item.createdAt).split('T')[0]
+                        dateBox.style.textAlign = "center"
+                        dateBox.style.color = "white"
+                        dateBox.style.marginTop = "2px"
+                        msgScreen.appendChild(dateBox)
+                    }
+
+                    const utcTime = new Date(item.createdAt);
+                    const localTimeString = utcTime.toLocaleTimeString('en-IN', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false, 
+                    });
+                    // let rawTime = ((item.createdAt).split('T')[1]).split(":")
+                    // let time = rawTime[0] + ":" + rawTime[1]
                     if (`<%=loginUser._id%>` == item.sender) {
                         let oldMsg = document.createElement("span");
                         let div = document.createElement("div");
+                        let sub = document.createElement("sub")
+                        sub.innerText = localTimeString
+                        sub.style.fontSize = "11px"
+                        sub.style.marginLeft = ".6rem"
                         div.className = "user-msg-cont";
                         oldMsg.className = "user-msg";
                         oldMsg.innerText = `${item.message}`
+                        oldMsg.appendChild(sub)
                         div.appendChild(oldMsg);
                         msgScreen.appendChild(div);
                         msgScreen.scrollTop = msgScreen.scrollHeight;
@@ -186,9 +251,14 @@
                     } else {
                         let oldMsg = document.createElement("span");
                         let div = document.createElement("div");
+                        let sub = document.createElement("sub")
+                        sub.innerText = localTimeString
+                        sub.style.fontSize = "11px"
+                        sub.style.marginLeft = ".6rem"
                         oldMsg.className = "reciever-msg";
                         div.className = "reciever-msg-cont";
                         oldMsg.innerText = `${item.message}`;
+                        oldMsg.appendChild(sub)
                         div.appendChild(oldMsg);
                         msgScreen.appendChild(div);
                         msgScreen.scrollTop = msgScreen.scrollHeight;
@@ -200,12 +270,31 @@
 
         // to send the message to the user
         sender.addEventListener("click", () => {
+            if (!friends.includes(openChat)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops!',
+                    html: 'You can only chat with users who are your <b>friends</b>.',
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Okay'
+                });
+                return;
+            }
             if (input.value) {
+                let raw = Date()
+                let another = (raw.split(' ')[4]).split(":")
+                let time = another[0] + ":" + another[1]
+
                 let newMsg = document.createElement("span");
                 let div = document.createElement("div");
+                let sub = document.createElement("sub");
+                sub.innerText = time
+                sub.style.marginLeft = ".6rem"
+                sub.style.fontSize = "11px"
                 div.className = "user-msg-cont";
                 newMsg.className = "user-msg";
                 newMsg.innerText = input.value;
+                newMsg.appendChild(sub)
                 div.appendChild(newMsg);
                 msgScreen.appendChild(div);
                 msgScreen.scrollTop = msgScreen.scrollHeight;
@@ -216,11 +305,19 @@
 
         // receiving message from user
         socket.on('message', (msg) => {
+            let raw = Date()
+            let another = (raw.split(' ')[4]).split(":")
+            let time = another[0] + ":" + another[1]
             let newMsg = document.createElement("span");
             let div = document.createElement("div");
+            let sub = document.createElement("sub");
+            sub.innerText = time
+            sub.style.marginLeft = ".6rem"
+            sub.style.fontSize = "11px"
             newMsg.className = "reciever-msg";
             div.className = "reciever-msg-cont";
             newMsg.innerText = msg;
+            newMsg.appendChild(sub)
             div.appendChild(newMsg);
             msgScreen.appendChild(div);
             msgScreen.scrollTop = msgScreen.scrollHeight;
@@ -231,6 +328,10 @@
         })
         // closing chat
         function closeChat() {
+            if (window.matchMedia("(max-width: 500px)").matches || window.matchMedia("(max-width: 991px)").matches) {
+                document.querySelector('#personal-chat').style.display = "none"
+                document.querySelector('.webPageCont').style.display = "block"
+            }
             document.getElementById('cross').style.display = "none"
             document.getElementById('personal-chat-child-2').style.display = "none"
             document.getElementById('personal-chat-child-1').style.display = "block";
@@ -286,7 +387,7 @@
                             document.querySelector('.dashbord-count').innerText = count - 1
                         }
                     }
-                    if (event.target.id == 'friends_deleteReq') {                        
+                    if (event.target.id == 'friends_deleteReq') {
                         event.target.closest('.user-container').remove();
                         if (count == 1) {
                             friendReq_Count = 0
@@ -297,6 +398,7 @@
                             document.querySelector('.friends-count').innerText = count - 1
                         }
                     }
+                    friends.pull(id)
 
                 } else {
                     alert('unable to take this request.try again later.');
@@ -306,6 +408,31 @@
                 alert('unable to take this request.try again later.');
             }
         }
+        function handleResize() {
+            const isMobile = window.matchMedia("(max-width: 500px)").matches;
+            const isTablet = window.matchMedia("(max-width: 991px)").matches;
+            const personalChat = document.getElementById('personal-chat');
+            const personalChatChild2 = document.getElementById('personal-chat-child-2');
+            const webPageCont = document.querySelector('.webPageCont');
+            const crossIcon = document.getElementById('cross');
+
+            if (!isMobile && !isTablet) {
+                // On desktop view
+                personalChat.style.display = "block";
+                webPageCont.style.display = "block";
+            } else {
+                // On mobile, keep only one view visible at a time (chat or list)
+                if (personalChat.style.display === "block" && personalChatChild2.style.display === "block") {
+                    webPageCont.style.display = "none";
+                } else {
+                    personalChat.style.display = "none";
+                    webPageCont.style.display = "block";
+                }
+            }
+        }
+
+        window.addEventListener("resize", handleResize);
+
     </script>
 </body>
 
