@@ -38,30 +38,39 @@
         /* @media screen and (max-width : 450px) {
             
         } */
+        .user-list {
+            height: 85vh;
+        }
+
+        @media screen and (max-width: 500px) {
+            .user-list {
+                height: 68vh;
+            }
+        }
     </style>
 </head>
 
 <body>
     <input type="search" name="search" id="search" placeholder="search here...">
-    <div style="height: 85vh; overflow-y: auto; 
+    <div class="user-list" style=" overflow-y: auto; 
     scrollbar-width: none;
     -ms-overflow-style: none;">
-        <% if(chatUser.length > 0) { for(let i=0; i < chatUser.length ; i++) { %>
-            <div class="user-container">
-                <div class="user" data-user="<%= chatUser[i]._id%>">
-                    <img src="<%= chatUser[i].profile%>" alt="">
-                    <span>
-                        <%= chatUser[i].name%>
-                    </span>
+        <% if(chatUser.length> 0) { for(let i=0; i < chatUser.length ; i++) { %>
+                <div class="user-container">
+                    <div class="user" data-user="<%= chatUser[i]._id%>">
+                        <img src="<%= chatUser[i].profile%>" alt="">
+                        <span>
+                            <%= chatUser[i].name.length> 15 ? chatUser[i].name.slice(0, 15) + "..." : chatUser[i].name
+                                %>
+                        </span>
+                    </div>
+                    <div class="btn">
+                        <button class="message-opt" data-user="<%= chatUser[i]._id%>" onclick="chat(event)"><i class="fa-regular fa-message"></i></button>
+                    </div>
                 </div>
-                <div class="btn">
-                    <button class="message-opt" data-user="<%= chatUser[i]._id%>" onclick="chat(event)">Send
-                        message</button>
-                </div>
-            </div>
-            <% }} else { %>
-                <div style="color: white; text-align: center;margin-top: 3rem;">No Chats Found</div>
-            <% }%>
+                <% }} else { %>
+                    <div style="color: white; text-align: center;margin-top: 3rem;">No Chats Found</div>
+                    <% }%>
     </div>
     <script id="js">
         showUserDetails()

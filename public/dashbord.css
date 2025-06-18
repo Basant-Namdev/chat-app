@@ -327,8 +327,14 @@ body {
 }
 
 @media screen and (max-width : 500px) {
+    #dashbord>ul>li>img {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+    }
+
     #msg-cont {
-        height: 82vh;
+        height: 73.3vh;
     }
 
     #menu-cont {
@@ -378,6 +384,10 @@ body {
 
     #send {
         width: 25% !important;
+    }
+
+    .menuText {
+        font-size: .8rem;
     }
 
     .title {

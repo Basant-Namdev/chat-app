@@ -91,6 +91,16 @@
             height: .7rem;
             line-height: 12px;
         }
+
+        .user-list {
+            height: 82vh;
+        }
+
+        @media screen and (max-width: 500px) {
+            .user-list {
+                height: 60.6vh;
+            }
+        }
     </style>
 </head>
 
@@ -99,7 +109,7 @@
     <div style="height: 90vh; overflow-y: auto; 
     scrollbar-width: none;
     -ms-overflow-style: none;"">
-    <div id="friendReq">
+    <div id=" friendReq">
         <div style="padding: .5rem;display: flex;justify-content: space-between;">
             <p style="color: white;">
                 friend requests
@@ -114,45 +124,51 @@
         <div id="requests" style="display: none; height: 30vh; overflow-y: auto; 
     scrollbar-width: none;
     -ms-overflow-style: none;">
-            <% for(let i=0; i<friendReq.length ; i++) { %>
-                <div class="user-req-container user-container">
-                    <div class="user" data-user="<%= friendReq[i]._id%>">
-                        <img src="<%= friendReq[i].profile%>" alt="">
-                        <span>
-                            <%= friendReq[i].name%>
-                        </span>
-                    </div>
-                    <div class="btn" style="display: flex; ">
-                        <button class="accpet-btn username" style="margin-right: .7rem;"
-                            data-user="<%= friendReq[i]._id%>"
-                            onclick="acceptFriendRequest(this, document.querySelector('.friends-count').innerText)">Accpet</button>
-                        <div><i class="fa-solid fa-square-xmark cancel" id="friends_deleteReq"
-                                onclick="deleteFriendRequest('<%=friendReq[i]._id%>', event, document.querySelector('.friends-count').innerText)"></i>
+            <% if(friendReq.length> 0){ for(let i=0; i<friendReq.length ; i++) { %>
+                    <div class="user-req-container user-container">
+                        <div class="user" data-user="<%= friendReq[i]._id%>">
+                            <img src="<%= friendReq[i].profile%>" alt="">
+                            <span>
+                                <%= friendReq[i].name.length> 15 ? friendReq[i].name.slice(0, 15) + "..." :
+                                    friendReq[i].name
+                                    %>
+                            </span>
+                        </div>
+                        <div class="btn" style="display: flex; ">
+                            <button class="accpet-btn username" style="margin-right: .7rem;"
+                                data-user="<%= friendReq[i]._id%>"
+                                onclick="acceptFriendRequest(this, document.querySelector('.friends-count').innerText)">Accpet</button>
+                            <div><i class="fa-solid fa-square-xmark cancel" id="friends_deleteReq"
+                                    onclick="deleteFriendRequest('<%=friendReq[i]._id%>', event, document.querySelector('.friends-count').innerText)"></i>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <% } %>
+                    <% }} else { %>
+                        <div style="color: white; text-align: center;margin-top: 5rem;">No Friend Requests Available.
+                        </div>
+                        <% }%>
         </div>
     </div>
-    <div id="friends" style="height: 82vh; overflow-y: auto; 
+    <div class="user-list" id="friends" style=" overflow-y: auto; 
     scrollbar-width: none;
     -ms-overflow-style: none;">
-        <% if(friends.length > 0) { for(let i=0; i<friends.length ; i++) { %>
-            <div class="user-container">
-                <div class="user" data-user="<%= friends[i]._id%>">
-                    <img src="<%= friends[i].profile%>" alt="">
-                    <span>
-                        <%= friends[i].name%>
-                    </span>
+        <% if(friends.length> 0) { for(let i=0; i<friends.length ; i++) { %>
+                <div class="user-container">
+                    <div class="user" data-user="<%= friends[i]._id%>">
+                        <img src="<%= friends[i].profile%>" alt="">
+                        <span>
+                            <%= friends[i].name.length> 15 ? friends[i].name.slice(0, 15) + "..." : friends[i].name
+                                %>
+                        </span>
+                    </div>
+                    <div class="btn">
+                        <button class="message-opt" data-user="<%= friends[i]._id%>" onclick="chat(event)"><i
+                                class="fa-regular fa-message"></i></button>
+                    </div>
                 </div>
-                <div class="btn">
-                    <button class="message-opt" data-user="<%= friends[i]._id%>" onclick="chat(event)">Send
-                        message</button>
-                </div>
-            </div>
-            <% }} else { %>
-                <div style="color: white; text-align: center;margin-top: 3rem;">No Friends</div>
-            <% }%>
+                <% }} else { %>
+                    <div style="color: white; text-align: center;margin-top: 3rem;">No Friends</div>
+                    <% }%>
     </div>
     </div>
 
@@ -272,8 +288,7 @@
                         </span>
                     </div>
                     <div class="btn">
-                        <button class="message-opt" data-user="${friend._id}" onclick="chat(event)">Send
-                            message</button>
+                        <button class="message-opt" data-user="${friend._id}" onclick="chat(event)"><i class="fa-regular fa-message"></i></button>
                     </div>`
         })
 

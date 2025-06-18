@@ -189,7 +189,7 @@
 
         // code for chat functionality
         function chat(e) {
-            openChat = e.target.dataset.user
+            openChat = e.currentTarget.dataset.user
             if (window.matchMedia("(max-width: 500px)").matches || window.matchMedia("(max-width: 991px)").matches) {
                 document.querySelector('.webPageCont').style.display = "none"
                 document.querySelector('#personal-chat').style.display = "block"
@@ -197,13 +197,15 @@
             document.getElementById('cross').style.display = "block"
             document.getElementById('personal-chat-child-2').style.display = "block";
             document.getElementById('personal-chat-child-1').style.display = "none";
-            msgScreen.innerHTML = "";
+            msgScreen.innerHTML = '<p style="position:absolute; top:50%; left:50%;transform: translate(-50%, -50%); color: white; font-size: 2rem; margin-right: 1rem;"><i class="fa-solid fa-spinner fa-spin-pulse"></i></p>'
+            document.getElementById('specific-user').getElementsByTagName('span')[0].innerHTML = openChat;
+            document.getElementById('specific-user').getElementsByTagName('img')[0].src = `../images/${openChat}.jpg`
             // to open chat window
-            document.getElementById('specific-user').getElementsByTagName('span')[0].innerHTML = e.target.parentNode.previousElementSibling.querySelector('span').innerText;
-            document.getElementById('specific-user').getElementsByTagName('img')[0].src = e.target.parentNode.previousElementSibling.querySelector('img').src;
+            document.getElementById('specific-user').getElementsByTagName('span')[0].innerHTML = e.currentTarget.parentNode.previousElementSibling.querySelector('span').innerText;
+            document.getElementById('specific-user').getElementsByTagName('img')[0].src = e.currentTarget.parentNode.previousElementSibling.querySelector('img').src;
             // Send a message to a specific user (creating one to one connection)               
             socket.emit('one to one', {
-                to: e.target.dataset.user
+                to: e.currentTarget.dataset.user
             });
             // fetching old chats
             const response = fetch('/dashbord/loadChat', {
@@ -212,9 +214,10 @@
                     'Content-type': 'application/json'
                 },
                 body: JSON.stringify({
-                    recieverId: e.target.dataset.user
+                    recieverId: e.currentTarget.dataset.user
                 })
             }).then(response => response.json()).then(data => {
+                msgScreen.innerHTML = "";
                 data.map((item, index) => {
                     if (index == 0 || (item.createdAt).split('T')[0] !== (data[index - 1].createdAt).split('T')[0]) {
                         let dateBox = document.createElement('div')
@@ -229,7 +232,7 @@
                     const localTimeString = utcTime.toLocaleTimeString('en-IN', {
                         hour: '2-digit',
                         minute: '2-digit',
-                        hour12: false, 
+                        hour12: false,
                     });
                     // let rawTime = ((item.createdAt).split('T')[1]).split(":")
                     // let time = rawTime[0] + ":" + rawTime[1]

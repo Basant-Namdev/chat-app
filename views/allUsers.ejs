@@ -88,21 +88,32 @@
         /* .user-container {
             height: 5.7rem;
         } */
+        .user-list {
+            height: 89vh;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        @media screen and (max-width: 500px) {
+            .user-list {
+                height: 68vh;
+            }
+        }
     </style>
 </head>
 
 <body>
     <input type="search" name="search" id="search" placeholder="search here...">
-    <div style="height: 85vh; overflow-y: auto; 
-    scrollbar-width: none;
-    -ms-overflow-style: none;">
+    <div class="user-list">
         <% if(user.length> 0) { for(let i=0; i<user.length ; i++) { %>
                 <% if(loginUser.sentReq.includes(user[i]._id)) { %>
                     <div class="user-container">
                         <div class="user" data-user="<%= user[i]._id%>">
                             <img src="<%= user[i].profile%>" alt="">
                             <span>
-                                <%= user[i].name%>
+                                <%= user[i].name.length> 15 ? user[i].name.slice(0, 15) + "..." : user[i].name
+                                    %>
                             </span>
                         </div>
                         <div class="btn">
@@ -114,7 +125,8 @@
                             <div class="user" data-user="<%= user[i]._id%>">
                                 <img src="<%= user[i].profile%>" alt="">
                                 <span>
-                                    <%= user[i].name%>
+                                    <%= user[i].name.length> 15 ? user[i].name.slice(0, 15) + "..." : user[i].name
+                                %>
                                 </span>
                             </div>
                             <div class="btn" style="display: flex;">
@@ -128,7 +140,8 @@
                                 <div class="user" data-user="<%= user[i]._id%>">
                                     <img src="<%= user[i].profile%>" alt="">
                                     <span>
-                                        <%= user[i].name%>
+                                        <%= user[i].name.length> 15 ? user[i].name.slice(0, 15) + "..." : user[i].name
+                                %>
                                     </span>
                                 </div>
                                 <div class="btn">
@@ -140,7 +153,8 @@
                                     <div class="user" data-user="<%= user[i]._id%>">
                                         <img src="<%= user[i].profile%>" alt="">
                                         <span>
-                                            <%= user[i].name%>
+                                            <%= user[i].name.length> 15 ? user[i].name.slice(0, 15) + "..." : user[i].name
+                                %>
                                         </span>
                                     </div>
                                     <div class="btn">
