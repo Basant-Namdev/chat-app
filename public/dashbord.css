@@ -71,10 +71,13 @@ body {
 
 #personal-chat-child-2 {
     display: none;
+    height: calc(var(--vh)*100);
+    flex-direction: column;
 }
 
 /* here starts the individual conversation */
 #specific-user {
+    flex: 0 0 auto;
     padding: .4rem;
     background: darkslategrey;
     cursor: pointer;
@@ -111,12 +114,14 @@ body {
     background: #393838;
     flex-direction: column;
     flex-wrap: wrap;
+    flex: 1 0 auto;
 }
 
 #msg-cont {
+    flex: 1 1 40vh;
     border: 2px solid black;
     margin: .2rem;
-    height: 78vh;
+    /* height: 78vh; */
     background-color: #0a0a0a;
     overflow: hidden;
     overflow-y: scroll;

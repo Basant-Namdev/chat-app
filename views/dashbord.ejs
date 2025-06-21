@@ -80,7 +80,13 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
+function fixVH() {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+  }
 
+  window.addEventListener('resize', fixVH);
+  window.addEventListener('load', fixVH);
         // connect to the '/chat' namespace
         const socket = io('/chat', {
             query: {
@@ -196,6 +202,7 @@
             }
             document.getElementById('cross').style.display = "block"
             document.getElementById('personal-chat-child-2').style.display = "block";
+            document.getElementById('personal-chat-child-2').style.display = "flex";
             document.getElementById('personal-chat-child-1').style.display = "none";
             msgScreen.innerHTML = '<p style="position:absolute; top:50%; left:50%;transform: translate(-50%, -50%); color: white; font-size: 2rem; margin-right: 1rem;"><i class="fa-solid fa-spinner fa-spin-pulse"></i></p>'
             document.getElementById('specific-user').getElementsByTagName('span')[0].innerHTML = openChat;
@@ -425,7 +432,7 @@
                 webPageCont.style.display = "block";
             } else {
                 // On mobile, keep only one view visible at a time (chat or list)
-                if (personalChat.style.display === "block" && personalChatChild2.style.display === "block") {
+                if (personalChat.style.display === "block" && personalChatChild2.style.display === "flex") {
                     webPageCont.style.display = "none";
                 } else {
                     personalChat.style.display = "none";

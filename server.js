@@ -15,7 +15,6 @@ const socket = require('./socketIO');
 const io = new Server(server, {
   connectionStateRecovery: {}
 });
-const cors = require('cors');
 const { timeStamp, timeLog } = require('console');
 
 require('dotenv').config();
@@ -30,7 +29,6 @@ async function main() {
   }
 }
 
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
